@@ -11,12 +11,20 @@ BEAI (Biochemical Engineering AI) is a modular research platform for protein ana
 
 ## Stack (existing repo tooling wins over these defaults)
 
+No project manifest exists yet, so these defaults stand. See `docs/ARCHITECTURE.md`.
+
 - Backend: Python 3.11+, FastAPI, Pydantic v2, SQLAlchemy 2 + Alembic, SQLite locally.
 - Science: Biopython, Biotite, NumPy, SciPy, pandas, RDKit. Optional: AutoDock Vina, OpenMM, PyTorch.
 - Frontend: React, TypeScript, Vite, 3Dmol.js viewer.
 - Tests: pytest, Vitest, Playwright smoke test.
 
-## Target layout (create only what the current milestone needs)
+## Layout
+
+### As-is (verified 2026-10-11)
+
+The repository has no application code. `git ls-tree -r main` is empty (`1c0b99b`, "Initialize project"). Tracked files are `AGENTS.md`, `.cursorignore`, six files under `.cursor/rules/`, seven slash commands under `.cursor/commands/`, and the kickoff documents under `docs/`. There is no `backend/`, `frontend/`, `tests/`, README, dependency manifest, virtualenv, database, or CI.
+
+### Target layout (create only what the current milestone needs)
 
 - backend/app/api/routes/ : thin FastAPI routers, no science here
 - backend/app/schemas/ : Pydantic request/response models, including AnalysisResult
@@ -32,14 +40,16 @@ BEAI (Biochemical Engineering AI) is a modular research platform for protein ana
 - frontend/src/ : pages, components, api client, viewer wrapper
 - docs/ : ARCHITECTURE, ROADMAP, SCIENTIFIC_VALIDATION, KNOWN_LIMITATIONS, DEVELOPMENT_LOG, HANDOFF, AUDIT
 
-## Commands (the kickoff chat replaces these with verified commands)
+## Commands (verified 2026-10-11)
 
-- Install backend: TODO
-- Run backend: TODO
-- Run frontend: TODO
-- Run backend tests: TODO
-- Run frontend tests: TODO
-- Migrate database: TODO
+No install, start, test, or migrate command exists. Nothing below was runnable. Do not replace these lines until a later chat has run the command and recorded the output in `docs/DEVELOPMENT_LOG.md`.
+
+- Install backend: not present (no `pyproject.toml`, requirements file, or `.venv`)
+- Run backend: not present (no backend entrypoint)
+- Run frontend: not present (no `package.json` or `frontend/`)
+- Run backend tests: not present (`pytest` is not on PATH; no `tests/` directory)
+- Run frontend tests: not present (no `package.json`)
+- Migrate database: not present (no Alembic project)
 
 ## Shared result schema (AnalysisResult)
 

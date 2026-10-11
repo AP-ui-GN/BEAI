@@ -1,0 +1,93 @@
+# Scientific validation plan
+
+Date: 2026-10-11. No BEAI method has been run. This file has no results, no residue counts, and no benchmark scores. Fill numbers only after the command that produced them has been run, and name the independent source of each expected value.
+
+A method presented as accurate stays labelled unvalidated until its section below contains dataset provenance, the metric, and a real result.
+
+## Structure overview (Milestone 1)
+
+| Check | Dataset | Metric | Acceptance | Result |
+| --- | --- | --- | --- | --- |
+| Radius of gyration | Analytic: two equal points 3.0 Å apart | unweighted Rg | 1.5 Å, tolerance 1e-6 | not run |
+| Distances, missing side-chain atom, REMARK 465 | Hand-built synthetic peptide with known coordinates | exact match to the hand calculation | exact | not run |
+| Chain and residue counts | 1UBQ PDB and mmCIF, downloaded from `files.rcsb.org` | counts equal each other and the RCSB entry page | exact match to the page read at implementation time | not run |
+| Multichain, heme, waters | 4HHB PDB from `files.rcsb.org` | chains A–D, HEM in the ligand inventory, waters separate | exact match to the RCSB entry page | not run |
+
+Do not write the 1UBQ or 4HHB counts into the test from memory. Open the entry page, record the URL and the date it was read, then put that count in the test.
+
+Provenance for the RCSB files: RCSB PDB data is CC0. Store the download URL and retrieval date in `backend/tests/fixtures/README.md`.
+
+## Sequence statistics (Milestone 2)
+
+| Check | Dataset | Metric | Acceptance | Result |
+| --- | --- | --- | --- | --- |
+| Length and mass | Ubiquitin FASTA copied from the 1UBQ record, not typed from memory | length; average mass | length 76; mass within 1 Da of a named independent calculator | not run |
+| Invalid alphabet | synthetic illegal characters | rejection | no sequence stored | not run |
+
+State the mass convention in the test comment (average mass, terminal water included) and the pI method.
+
+## Deeper structure (Milestone 2)
+
+| Check | Dataset | Metric | Acceptance | Result |
+| --- | --- | --- | --- | --- |
+| Secondary structure | 1UBQ | helix and strand content versus file `HELIX` and `SHEET` records | algorithm name recorded; any difference explained here | not run |
+| SASA | 1UBQ | total SASA, two independent implementations | inside a tolerance written down before looking at the 1UBQ comparison | not run |
+| Superposition | analytic copies | C-alpha RMSD | self-fit and rotated-copy fit near 0 (tolerance 1e-6 Å); refuse below 3 pairs | not run |
+
+Secondary structure uses DSSP if `mkdssp` exists, otherwise Biotite P-SEA. Today `mkdssp` is absent, so the planned algorithm is P-SEA until that changes. File-annotated helices and sheets are shown separately either way.
+
+SASA plan: Shrake-Rupley, probe radius 1.4 Å, radii set named in the method record. Relative SASA only if the maximum-accessibility table is cited.
+
+## Pocket detector (Milestone 2)
+
+Label in the UI: "baseline geometric heuristic, unvalidated until benchmarked."
+
+Plan, not a result:
+
+- Choose 8 to 10 diverse, non-redundant ligand-bound RCSB entries.
+- Write the IDs here and split them into a tuning set and a held-out test set before any parameter change.
+- Do not tune on the test set.
+- Remove the ligand, run detection, and record whether any of the top 3 pockets lies within a pre-registered distance of the ligand centre, plus the fraction of ligand-contacting residues recovered.
+- Proposed distance to pre-register in the Milestone 2 chat before runs: 4 Å. Change it there if you want a different cutoff. It is not a measured result.
+- Write failures as well as successes. If the benchmark is not run, the UI stays "unvalidated."
+
+## Compounds (Milestone 3)
+
+Reference values from the milestone contract. They are checks for a future RDKit build, not outputs of this repository.
+
+| Input | Formula | Molecular weight | Result |
+| --- | --- | --- | --- |
+| Aspirin `CC(=O)Oc1ccccc1C(=O)O` | C9H8O4 | 180.16 | not run |
+| Caffeine `CN1C=NC2=C1C(=O)N(C(=O)N2C)C` | C8H10N4O2 | 194.19 | not run |
+| Ethanol `CCO` | C2H6O | 46.07 | not run |
+
+When the tests are written, confirm each value with RDKit and a second source named in the test comment. Also require: self-Tanimoto 1.0, a symmetric matrix, aspirin closer to salicylic acid than to caffeine, salts left as multi-fragment unless the caller asks, and a mocked network failure that stores nothing.
+
+Descriptors are named by their RDKit function. Crippen logP is an estimate. No drug-likeness label.
+
+## Docking (Milestone 4)
+
+| Check | Dataset | Metric | Acceptance | Result |
+| --- | --- | --- | --- | --- |
+| Redock | 5–10 ligand-bound complexes, tuning split from held-out, IDs recorded first | heavy-atom RMSD to the crystal pose, symmetry handled | success counted at ≤ 2.0 Å; report the rate and the Vina version | not run |
+| Score versus activity | one target, one ChEMBL standard type and unit | rank correlation with a bootstrap interval | report the number even if it is weak | not run |
+| Seeds | same inputs | score reproduction | same seed within a tolerance written down before the run; spread reported | not run |
+
+A docking score is not an affinity. Parser tests use a Vina output file captured from a real run, not a hand-typed score.
+
+## Safety evidence (Milestone 5)
+
+This module is not a clinical model and has no accuracy target.
+
+Validation is provenance tests: label text stored verbatim, FAERS always observational, similarity off-targets always `computational_prediction` and "unverified", literature `unclassified` until a person sets a category, and no interaction pair that is absent from retrieved text. Network failure stores no report content.
+
+## Models and simulation (Milestone 6)
+
+No results.
+
+- Embeddings: on a small curated pair set, rank correlation between embedding cosine similarity and pairwise alignment identity, with a bootstrap interval. No functional or structural claim.
+- Solubility: public set such as ESOL, checksum and licence recorded, scaffold split saved with its seed, baseline beside any neural model, RMSE, MAE, and R-squared with bootstrap intervals.
+- OpenMM: minimization lowers potential energy; a short NVE run on a small system stays inside a pre-registered energy drift; a thermostatted run has mean temperature near the target inside a pre-registered tolerance; same seed and platform reproduce inside a pre-registered tolerance. Labels: minimization is not dynamics; a short simulation is not evidence of stability, binding, or efficacy.
+- Generation, only if requested: validity, uniqueness, novelty, diversity, and filter pass rate, with liability filters on.
+
+Stub tests do not count as model-quality results.

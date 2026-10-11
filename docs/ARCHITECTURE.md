@@ -1,0 +1,127 @@
+# BEAI architecture
+
+Date: 2026-10-11. The repository has no application. This document is the proposed scaffold. It does not create that scaffold.
+
+## As-is
+
+There is no running system. `main` (`1c0b99b`) contains no files. This branch adds agent rules and these docs only.
+
+What exists:
+
+- `AGENTS.md` — agent brief, target layout, and verified "not present" commands
+- `.cursor/rules/` — mission, backend, frontend, scientific, testing, and safety rules
+- `.cursor/commands/` — reusable slash commands
+- `.cursorignore` — `data/`, `models/`, `.venv/`, `node_modules/`, `.logs/`, `.env`
+- `docs/` — this kickoff
+
+What does not exist: an API, a database, a frontend, a viewer, jobs, reports, fixtures, tests, CI, or a virtualenv.
+
+## Target architecture
+
+A local research app. The browser talks only to a FastAPI process on `127.0.0.1`. Science lives in services. Routes validate, call a service, and return an `AnalysisResult`. SQLite stores metadata and result JSON. Structure files live on disk under server-generated UUID names, with path and sha256 on the row. Optional tools are probed, never required for import. Missing tools become `{available: false, version: null, reason}` on `GET /api/health` and HTTP 503 on the routes that need them.
+
+```text
+backend/app/api/routes/     thin routers
+backend/app/schemas/        Pydantic v2 models, including AnalysisResult
+backend/app/services/       structure, sequence, compounds, docking, safety,
+                            simulation, reports, models_registry
+backend/app/data_access/    one module per external source, shared HTTP client
+backend/app/db/             SQLAlchemy 2 models, session, Alembic
+backend/app/jobs/           job records and in-process runner (Milestone 2)
+backend/app/core/           config, logging, errors, capabilities
+backend/tests/fixtures/     synthetic peptide plus redistributable RCSB files
+frontend/src/               pages, components, one API client, one viewer wrapper
+```
+
+Create only the directories the current milestone uses. Unbuilt areas are Planned pages with no actions.
+
+Every analysis returns the `AnalysisResult` envelope in `AGENTS.md`. An absent measurement is null plus a warning. `database_reported` is part of the origin enum from the first schema, not a later patch.
+
+Milestone 1 runs `structure_overview` in the request and still writes an `Analysis` row through `pending` → `running` → `succeeded` or `failed`. The in-process job runner arrives in Milestone 2 for pocket detection and comparison. Reports are rendered with Jinja2 (autoescape on) from the stored result only, as HTML, Markdown, and JSON.
+
+### Proposed Milestone 1 files
+
+Do not treat this list as already created.
+
+- `pyproject.toml` — minimum backend dependencies, Python `>=3.11`
+- `.venv/` — gitignored; create with `python3 -m venv .venv`
+- `.env.example` — placeholders only
+- `.gitignore` — `data/`, `.logs/`, `.venv/`, `node_modules/`, `.env`, `models/`
+- `backend/app/main.py` — FastAPI app, CORS allowlist, bind `127.0.0.1`
+- `backend/app/core/` — settings, logging, typed errors, capabilities
+- `backend/app/api/routes/health.py` — `GET /api/health`
+- `backend/app/db/` — `Structure`, `Analysis`, first Alembic revision
+- `backend/app/api/routes/structures.py` and `analyses.py`
+- `backend/app/services/structure/` — parse and `structure_overview`
+- `backend/app/services/reports/` — HTML, Markdown, JSON
+- `backend/tests/` — health, upload rejection, synthetic geometry, report equality
+- `frontend/` — Vite, React, TypeScript, 3Dmol.js wrapper, Planned pages for unbuilt areas
+- `README.md` — quick start written from commands that were actually run
+
+Milestone 1 dependencies to consider, and nothing else up front: FastAPI, uvicorn, Pydantic v2, pydantic-settings, SQLAlchemy 2, Alembic, Biopython, Jinja2, python-multipart, pytest. Add the frontend toolchain and Playwright when that commit starts. Do not preinstall RDKit, Biotite, NumPy stacks beyond what Biopython needs, Vina, OpenMM, or PyTorch.
+
+Pin the versions that `pip` and `npm` actually install. Do not copy version numbers from memory. Record each addition, its licence, and its size in the decision log below.
+
+### Proposed commands
+
+These are not verified. They are the commands Milestone 1 should create and then run. Until that happens, `AGENTS.md` stays on "not present".
+
+```text
+python3 -m venv .venv
+.venv/bin/python -m pip install -U pip
+.venv/bin/python -m pip install -e ".[dev]"
+.venv/bin/uvicorn backend.app.main:app --host 127.0.0.1 --port 8731
+npm --prefix frontend install
+npm --prefix frontend run dev -- --host 127.0.0.1 --port 8732
+.venv/bin/python -m pytest
+npm --prefix frontend test
+.venv/bin/python -m alembic -c backend/alembic.ini upgrade head
+```
+
+Start servers in the background with logs under `.logs/`. `node` on `PATH` is v22.14.0 and `npm` belongs to Node v22.23.3. The frontend commit should print both versions and pick one Node on purpose.
+
+Suggested ports are 8731 (API) and 8732 (Vite) so they do not sit on 3000, 5173, or 8080. Put them in `.env.example`.
+
+## Decision records
+
+### Backend stack
+
+- Decision: Python 3.12.3, FastAPI, Pydantic v2, SQLAlchemy 2, Alembic.
+- Alternatives: Django, Flask, a Node API.
+- Reason: the repository has no existing tool, so the prompt-pack default wins. The checked `python3` is 3.12.3, which meets 3.11+. The science libraries BEAI needs are Python libraries.
+
+### Database
+
+- Decision: SQLite file for local research use.
+- Alternatives: PostgreSQL now.
+- Reason: one user, one machine, no existing database. Switching engine later is a question that must be asked before it happens. UUID primary keys and UTC timestamps keep a later move possible.
+
+### 3D viewer
+
+- Decision: 3Dmol.js inside one wrapper component.
+- Alternatives: Mol*, NGL, a custom WebGL view.
+- Reason: 3Dmol.js is the default for a reliable React integration in Milestone 1. Mol* is the upgrade path if cartoon quality or very large assemblies outgrow it. The wrapper is the only import site, so the swap stays local.
+
+### Job runner
+
+- Decision: in-process runner with status stored on a database row, starting in Milestone 2. Milestone 1 persists analysis status but does the work in the request.
+- Alternatives: Celery, RQ, Redis from the start.
+- Reason: there is no load to justify another service. Progress is a number only when the work can measure it; otherwise null. No timer-based progress.
+
+### Report format
+
+- Decision: HTML (Jinja2, autoescape on), Markdown, and JSON, all from the stored `AnalysisResult`.
+- Alternatives: PDF in Milestone 1.
+- Reason: PDF adds a heavy renderer. JSON makes the report-equals-API test straightforward. HTML must escape author text such as a PDB `TITLE` that contains a script tag.
+
+### Package install
+
+- Decision: a project `.venv` created from `/usr/bin/python3`, installs with pip. No uv and no conda.
+- Alternatives: install uv, Miniconda, or use system site-packages.
+- Reason: uv and conda are not installed. System pip must not receive project packages. Optional conda-forge tools (Vina, OpenMM) wait until the milestone that needs them, and only after a size and licence check.
+
+### Result schema
+
+- Decision: implement the full origin enum now, including `database_reported` and `ml_prediction`, even though Milestone 1 only emits `experimental_record` and `calculated`.
+- Alternatives: add origins when later milestones need them.
+- Reason: the envelope is the honesty contract. A second schema would let calculated and database-reported numbers sit in the same field unlabeled.
