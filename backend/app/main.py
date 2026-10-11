@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from backend.app.api.errors import register_exception_handlers
+from backend.app.api.routes.analyses import router as analyses_router
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.structures import router as structures_router
 from backend.app.core.config import Settings
@@ -77,6 +78,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     register_exception_handlers(app)
     app.include_router(health_router)
     app.include_router(structures_router)
+    app.include_router(analyses_router)
     return app
 
 

@@ -32,9 +32,7 @@ def format_for_filename(display_filename: str) -> str:
     try:
         return _FORMAT_BY_SUFFIX[suffix]
     except KeyError as exc:
-        raise InvalidInput(
-            "Extension is not allowed. Upload a .pdb, .ent, .cif, or .mmcif file."
-        ) from exc
+        raise InvalidInput("Extension is not allowed. Upload a .pdb, .ent, .cif, or .mmcif file.") from exc
 
 
 async def read_limited(upload: UploadFile, max_bytes: int) -> bytes:
@@ -63,9 +61,7 @@ def assert_text_structure(payload: bytes, structure_format: str) -> None:
     if not payload:
         raise InvalidInput("The file is empty.")
     if payload.startswith(b"\x1f\x8b"):
-        raise InvalidInput(
-            "Gzip-compressed files are not accepted. Upload uncompressed PDB or mmCIF."
-        )
+        raise InvalidInput("Gzip-compressed files are not accepted. Upload uncompressed PDB or mmCIF.")
     if b"\x00" in payload[:8192]:
         raise InvalidInput("The file looks like binary data, not a PDB or mmCIF text file.")
     text_lines = payload.splitlines()

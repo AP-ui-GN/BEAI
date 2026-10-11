@@ -36,8 +36,7 @@ async def ingest_structure(upload: UploadFile, settings: Settings, session: Sess
     records = coordinate_record_count(payload)
     if records > settings.max_atom_count:
         raise InvalidInput(
-            f"The structure has {records} coordinate records, "
-            f"above the limit of {settings.max_atom_count}."
+            f"The structure has {records} coordinate records, above the limit of {settings.max_atom_count}."
         )
     structure_id = str(uuid.uuid4())
     suffix = "pdb" if structure_format == "pdb" else "cif"

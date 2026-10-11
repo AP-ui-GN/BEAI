@@ -1,0 +1,28 @@
+HEADER    SYNTHETIC                               01-JAN-00   SYN1
+TITLE     BEAI SYNTHETIC PEPTIDE
+REMARK 465
+REMARK 465 MISSING RESIDUES
+REMARK 465 THE FOLLOWING RESIDUES WERE NOT LOCATED IN THE
+REMARK 465 EXPERIMENT. (M=MODEL NUMBER; RES=RESIDUE NAME; C=CHAIN
+REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)
+REMARK 465
+REMARK 465   M RES C SSSEQI
+REMARK 465     GLY A     3
+SEQRES   1 A    4  ALA ALA GLY ALA
+ATOM      1  N   ALA A   1       0.000   1.000   0.000  1.00 10.00           N
+ATOM      2  CA  ALA A   1       0.000   0.000   0.000  1.00 10.00           C
+ATOM      3  C   ALA A   1       1.000   0.000   0.000  1.00 10.00           C
+ATOM      4  O   ALA A   1       1.000   1.000   0.000  1.00 10.00           O
+ATOM      5  CB AALA A   1       0.000   0.000   1.000  0.70 10.00           C
+ATOM      6  CB BALA A   1       0.000   0.000   2.000  0.30 10.00           C
+ATOM      7  N   ALA A   2       3.000   1.000   0.000  1.00 20.00           N
+ATOM      8  CA  ALA A   2       3.000   0.000   0.000  1.00 20.00           C
+ATOM      9  C   ALA A   2       4.000   0.000   0.000  1.00 20.00           C
+ATOM     10  O   ALA A   2       4.000   1.000   0.000  1.00 20.00           O
+ATOM     11  N   ALA A   4       8.000   1.000   0.000  1.00 30.00           N
+ATOM     12  CA  ALA A   4       8.000   0.000   0.000  1.00 30.00           C
+ATOM     13  C   ALA A   4       9.000   0.000   0.000  1.00 30.00           C
+ATOM     14  O   ALA A   4       9.000   1.000   0.000  1.00 30.00           O
+ATOM     15  CB  ALA A   4       8.000   0.000   1.000  1.00 30.00           C
+HETATM   16  O   HOH A 101      20.000  20.000  20.000  1.00 40.00           O
+END

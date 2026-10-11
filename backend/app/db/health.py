@@ -37,9 +37,7 @@ def database_status(engine: Engine, head: str | None) -> dict[str, Any]:
     try:
         with engine.connect() as connection:
             try:
-                rows = connection.execute(
-                    text("SELECT version_num FROM alembic_version")
-                ).fetchall()
+                rows = connection.execute(text("SELECT version_num FROM alembic_version")).fetchall()
             except Exception:
                 logger.info("alembic_version is not readable", exc_info=True)
                 return {

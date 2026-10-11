@@ -47,10 +47,7 @@ ATOM 1 C CA . ALA A 1 1 ? 0.000 0.000 0.000 1.00 10.00 1 ALA A CA 1
 def atom_lines(count: int) -> bytes:
     lines = [b"HEADER    TEST"]
     for index in range(1, count + 1):
-        atom = (
-            f"ATOM  {index:5d}  CA  ALA A{index:4d}"
-            "       0.000   0.000   0.000  1.00 10.00           C"
-        )
+        atom = f"ATOM  {index:5d}  CA  ALA A{index:4d}       0.000   0.000   0.000  1.00 10.00           C"
         lines.append(atom.encode())
     lines.append(b"END")
     return b"\n".join(lines) + b"\n"

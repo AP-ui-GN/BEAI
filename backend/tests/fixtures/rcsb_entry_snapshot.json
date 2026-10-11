@@ -1,0 +1,73 @@
+{
+  "retrieved_at": "2026-10-11",
+  "note": "Trimmed fields copied from the RCSB Data API on this date. Tests read this file. The application does not.",
+  "1UBQ": {
+    "entry_url": "https://data.rcsb.org/rest/v1/core/entry/1UBQ",
+    "polymer_entity_url": "https://data.rcsb.org/rest/v1/core/polymer_entity/1UBQ/1",
+    "title": "STRUCTURE OF UBIQUITIN REFINED AT 1.8 ANGSTROMS RESOLUTION",
+    "experimental_method": "X-RAY DIFFRACTION",
+    "resolution_angstrom": 1.8,
+    "r_free_in_refine_record": null,
+    "deposition_date": "1987-01-02",
+    "deposited_polymer_monomer_count": 76,
+    "deposited_unmodeled_polymer_monomer_count": 0,
+    "deposited_model_count": 1,
+    "deposited_atom_count": 660,
+    "deposited_hydrogen_atom_count": 0,
+    "deposited_solvent_atom_count": 58,
+    "deposited_nonpolymer_entity_instance_count": 0,
+    "chain_sequence_length": {
+      "A": 76
+    },
+    "chain_instance_mapping_length": {
+      "A": 76
+    },
+    "sequence_one_letter": {
+      "A": "MQIFVKTLTGKTITLEVEPSDTIENVKAKIQDKEGIPPDQQRLIFAGKQLEDGRTLSDYNIQKESTLHLVLRLRGG"
+    },
+    "strand_ids": "A"
+  },
+  "4HHB": {
+    "entry_url": "https://data.rcsb.org/rest/v1/core/entry/4HHB",
+    "title": "THE CRYSTAL STRUCTURE OF HUMAN DEOXYHAEMOGLOBIN AT 1.74 ANGSTROMS RESOLUTION",
+    "experimental_method": "X-RAY DIFFRACTION",
+    "resolution_angstrom": 1.74,
+    "r_free_in_refine_record": null,
+    "deposition_date": "1984-03-07",
+    "deposited_polymer_monomer_count": 574,
+    "deposited_unmodeled_polymer_monomer_count": 0,
+    "deposited_model_count": 1,
+    "deposited_solvent_atom_count": 221,
+    "nonpolymer_bound_components": [
+      "HEM"
+    ],
+    "chain_sequence_length": {
+      "A": 141,
+      "C": 141,
+      "B": 146,
+      "D": 146
+    },
+    "strand_ids": {
+      "entity_1": "A,C",
+      "entity_2": "B,D"
+    },
+    "chain_instance_mapping_length": {
+      "A": 141,
+      "B": 146,
+      "C": 141,
+      "D": 146
+    },
+    "hem_auth_asym_ids": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "po4_auth_asym_ids": [
+      "B",
+      "D"
+    ],
+    "hem_comp_id": "HEM",
+    "po4_comp_id": "PO4"
+  }
+}

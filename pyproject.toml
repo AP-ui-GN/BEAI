@@ -29,12 +29,15 @@ dev = [
 [tool.setuptools.packages.find]
 include = ["backend*"]
 
+[tool.setuptools.package-data]
+"backend.app.services.structure" = ["ccd/*.cif"]
+
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 addopts = "-q"
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py312"
 src = ["backend"]
 

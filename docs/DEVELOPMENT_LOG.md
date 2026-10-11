@@ -72,3 +72,11 @@ Health on a fresh SQLite file reports `degraded` because there is no Alembic rev
 - `POST /api/structures` streams the body, enforces the byte limit, sniffs PDB or mmCIF, parses with Biopython 1.88, and stores the bytes under a UUID filename.
 - `.venv/bin/python -m pytest` — **15 passed, 0 failed**, 1 warning (Starlette `TestClient` prefers `httpx2`; `httpx==0.28.1` still ran the suite).
 - `.venv/bin/ruff check backend` — passed.
+
+## 2026-10-11 — Milestone 1, structure_overview
+
+- Downloaded 1UBQ PDB and mmCIF and 4HHB PDB from `https://files.rcsb.org/download/` and saved sha256 values in `backend/tests/fixtures/README.md`.
+- Copied chain, solvent, heme, and phosphate counts from the RCSB Data API on 2026-10-11 into `backend/tests/fixtures/rcsb_entry_snapshot.json`. The HTML entry pages are client-rendered, so the API behind them was the source.
+- Bundled chemical-component files for the 20 standard amino acids plus MSE from `https://files.rcsb.org/ligands/download/{ID}.cif` the same day. Required heavy atoms exclude hydrogens and atoms with `pdbx_leaving_atom_flag` Y (OXT).
+- `.venv/bin/python -m pytest` — **31 passed, 0 failed**, 1 warning (Starlette `TestClient` / `httpx2`).
+- `.venv/bin/ruff check backend` — passed.

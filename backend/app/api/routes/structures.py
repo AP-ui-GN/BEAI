@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings
+from backend.app.core.timeutil import utc_iso
 from backend.app.db.models import Structure
 from backend.app.db.session import get_session
 from backend.app.schemas.structure import StructureListResponse, StructureResponse
@@ -19,23 +20,13 @@ router = APIRouter(prefix="/api/structures", tags=["structures"])
 
 
 def _to_response(row: Structure) -> StructureResponse:
-    created = row.created_at
-    if created.tzinfo is None:
-        from datetime import UTC
-
-        created = created.replace(tzinfo=UTC)
-    else:
-        from datetime import UTC
-
-        created = created.astimezone(UTC)
-    created_text = created.isoformat(timespec="microseconds").replace("+00:00", "Z")
     return StructureResponse(
         id=row.id,
         display_filename=row.display_filename,
         format=row.format,
         size_bytes=row.size_bytes,
         sha256=row.sha256,
-        created_at=created_text,
+        created_at=utc_iso(row.created_at),
         metadata=row.metadata_json,
     )
 

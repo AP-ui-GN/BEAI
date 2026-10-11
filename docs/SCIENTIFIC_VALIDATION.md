@@ -8,10 +8,10 @@ A method presented as accurate stays labelled unvalidated until its section belo
 
 | Check | Dataset | Metric | Acceptance | Result |
 | --- | --- | --- | --- | --- |
-| Radius of gyration | Analytic: two equal points 3.0 Å apart | unweighted Rg | 1.5 Å, tolerance 1e-6 | not run |
-| Distances, missing side-chain atom, REMARK 465 | Hand-built synthetic peptide with known coordinates | exact match to the hand calculation | exact | not run |
-| Chain and residue counts | 1UBQ PDB and mmCIF, downloaded from `files.rcsb.org` | counts equal each other and the RCSB entry page | exact match to the page read at implementation time | not run |
-| Multichain, heme, waters | 4HHB PDB from `files.rcsb.org` | chains A–D, HEM in the ligand inventory, waters separate | exact match to the RCSB entry page | not run |
+| Radius of gyration | Analytic: two equal points 3.0 Å apart | unweighted Rg | 1.5 Å, tolerance 1e-6 | passed 2026-10-11 (`.venv/bin/python -m pytest`, 31 passed, 0 failed). The two-point case returned 1.5 within 1e-6 |
+| Distances, missing side-chain atom, REMARK 465 | Hand-built synthetic peptide with known coordinates | exact match to the hand calculation | exact | passed in the same run. C-alpha distances 3.0 Å and 5.0 Å; the 5.0 Å pair is a chain break at the 4.5 Å threshold; residue A2 is missing CB; REMARK 465 GLY A 3 is reported. Three C-alpha atoms at x = 0, 3, 8 give Rg = sqrt(98/9) |
+| Chain and residue counts | 1UBQ PDB and mmCIF, downloaded from `files.rcsb.org` | counts equal each other and the RCSB entry page | exact match to the page read at implementation time | passed in the same run. Chain A has 76 polymer residues in both formats, matching `rcsb_sample_sequence_length` 76 and `deposited_polymer_monomer_count` 76 from the RCSB Data API snapshot taken 2026-10-11 (`backend/tests/fixtures/rcsb_entry_snapshot.json`). Water residue count 58 matches `deposited_solvent_atom_count`. Atom count 660 and hydrogen count 0 match the entry. R-free is null because the file records it as missing; that null is not a calculated substitute |
+| Multichain, heme, waters | 4HHB PDB from `files.rcsb.org` | chains A–D, HEM in the ligand inventory, waters separate | exact match to the RCSB entry page | passed in the same run. Observed polymer counts A 141, B 146, C 141, D 146 (total 574). HEM is on chains A–D (4 residues). PO4 is on chains B and D (2 residues). Water residue count 221, kept out of the polymer counts. Counts match the same snapshot |
 
 Do not write the 1UBQ or 4HHB counts into the test from memory. Open the entry page, record the URL and the date it was read, then put that count in the test.
 

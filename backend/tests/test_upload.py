@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import text
 
 from backend.app.core.config import Settings
+from backend.app.db.migrate import upgrade_to_head
 from backend.app.main import create_app
 from backend.tests.samples import atom_lines, minimal_mmcif, minimal_pdb
 
@@ -66,9 +67,7 @@ def test_mmcif_upload(client: TestClient) -> None:
     assert body["metadata"]["chain_ids"] == ["A"]
 
 
-def test_path_traversal_filename_stays_inside_storage(
-    client: TestClient, settings: Settings, tmp_path: Path
-) -> None:
+def test_path_traversal_filename_stays_inside_storage(client: TestClient, settings: Settings, tmp_path: Path) -> None:
     outside = tmp_path / "outside.pdb"
     response = _upload(client, "../../outside.pdb", minimal_pdb())
     assert response.status_code == 201, response.text
@@ -103,16 +102,33 @@ def test_rejects_empty_binary_extension_and_malformed(client: TestClient) -> Non
     assert "data_" in mismatched.json()["message"]
 
 
-def test_oversized_upload_is_413(client: TestClient) -> None:
-    payload = b"ATOM  " + (b"x" * 9000)
-    response = _upload(client, "big.pdb", payload)
+def test_oversized_upload_is_413(tmp_path: Path) -> None:
+    settings = Settings(
+        database_url=f"sqlite:///{tmp_path / 'beai.sqlite'}",
+        storage_dir=tmp_path / "structures",
+        max_upload_bytes=128,
+        max_atom_count=200_000,
+        cors_origins="http://127.0.0.1:8732",
+    )
+    upgrade_to_head(settings.resolved_database_url())
+    with TestClient(create_app(settings)) as client:
+        response = _upload(client, "big.pdb", b"ATOM  " + (b"x" * 200))
     assert response.status_code == 413
     assert response.json()["code"] == "payload_too_large"
     assert "Traceback" not in response.text
 
 
-def test_extreme_atom_count_is_422(client: TestClient, settings: Settings) -> None:
-    response = _upload(client, "many.pdb", atom_lines(settings.max_atom_count + 1))
+def test_extreme_atom_count_is_422(tmp_path: Path) -> None:
+    settings = Settings(
+        database_url=f"sqlite:///{tmp_path / 'beai.sqlite'}",
+        storage_dir=tmp_path / "structures",
+        max_upload_bytes=50 * 1024 * 1024,
+        max_atom_count=5,
+        cors_origins="http://127.0.0.1:8732",
+    )
+    upgrade_to_head(settings.resolved_database_url())
+    with TestClient(create_app(settings)) as client:
+        response = _upload(client, "many.pdb", atom_lines(6))
     assert response.status_code == 422, response.text
     assert "limit" in response.json()["message"]
     assert list(settings.resolved_storage_dir().iterdir()) == []
@@ -136,8 +152,5 @@ def test_structure_survives_a_new_process(client: TestClient, settings: Settings
 
 def test_migration_tables_exist(client: TestClient) -> None:
     with client.app.state.engine.connect() as connection:
-        names = {
-            row[0]
-            for row in connection.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
-        }
+        names = {row[0] for row in connection.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))}
     assert {"structures", "analyses", "alembic_version"} <= names
