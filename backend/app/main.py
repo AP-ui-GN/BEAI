@@ -8,6 +8,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from backend.app.api.errors import register_exception_handlers
 from backend.app.api.routes.health import router as health_router
+from backend.app.api.routes.structures import router as structures_router
 from backend.app.core.config import Settings
 from backend.app.core.logging import configure_logging, request_id_var
 from backend.app.db.session import make_engine, session_factory
@@ -75,6 +76,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(RequestIdMiddleware)
     register_exception_handlers(app)
     app.include_router(health_router)
+    app.include_router(structures_router)
     return app
 
 

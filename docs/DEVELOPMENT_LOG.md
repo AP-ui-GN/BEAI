@@ -65,3 +65,10 @@ Baseline before edits: `git status` was clean on `cursor/beai-kickoff-rules-c3c0
 - `.venv/bin/python -m pytest` — **6 passed, 0 failed**, 1 warning (`StarletteDeprecationWarning`: Starlette's `TestClient` prefers `httpx2`; tests still ran on `httpx==0.28.1`).
 
 Health on a fresh SQLite file reports `degraded` because there is no Alembic revision yet. RDKit, mkdssp, Vina, OpenMM, PyTorch, and GPU are `available: false` with `version: null` and a reason. No server was left running for this step.
+
+## 2026-10-11 — Milestone 1, database and structure upload
+
+- Alembic revision `0001_initial` creates `structures` and `analyses`.
+- `POST /api/structures` streams the body, enforces the byte limit, sniffs PDB or mmCIF, parses with Biopython 1.88, and stores the bytes under a UUID filename.
+- `.venv/bin/python -m pytest` — **15 passed, 0 failed**, 1 warning (Starlette `TestClient` prefers `httpx2`; `httpx==0.28.1` still ran the suite).
+- `.venv/bin/ruff check backend` — passed.

@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.core.config import Settings
+from backend.app.db.migrate import upgrade_to_head
 from backend.app.main import create_app
 
 
@@ -15,8 +16,8 @@ def settings(tmp_path: Path) -> Settings:
     return Settings(
         database_url=f"sqlite:///{tmp_path / 'beai.sqlite'}",
         storage_dir=tmp_path / "structures",
-        max_upload_bytes=4096,
-        max_atom_count=500,
+        max_upload_bytes=8192,
+        max_atom_count=20,
         cors_origins="http://127.0.0.1:8732",
         ca_break_threshold_angstrom=4.5,
     )
@@ -24,6 +25,7 @@ def settings(tmp_path: Path) -> Settings:
 
 @pytest.fixture
 def client(settings: Settings) -> Iterator[TestClient]:
+    upgrade_to_head(settings.resolved_database_url())
     application = create_app(settings)
     with TestClient(application) as test_client:
         yield test_client
