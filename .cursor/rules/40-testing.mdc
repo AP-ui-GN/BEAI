@@ -1,0 +1,17 @@
+---
+description: Testing standards and fixtures for BEAI
+globs: **/tests/**,**/test_*.py,**/*.test.ts,**/*.test.tsx,**/e2e/**
+alwaysApply: false
+---
+
+# Testing standards
+
+- Fixtures are small and redistributable. Use a hand-built synthetic PDB for exact geometry, plus real RCSB entries (RCSB data is CC0), for example 1UBQ (single chain) and 4HHB (several chains with heme and waters). Record provenance in tests/fixtures/README.md. Check expected counts against the RCSB entry page, not memory.
+- Every scientific function gets a happy path, an edge case and an invalid-input test.
+- Test exact geometry with synthetic coordinates: distance, angle, dihedral and radius of gyration, tolerance 1e-6.
+- Derive expected values independently (analytic result, reference calculator, RCSB record). Never copy a value out of the code under test.
+- Mock the network at the HTTP boundary with payloads shaped like real responses. Mark live-network tests with @pytest.mark.network so they are opt-in. Include tests proving that a failed request yields an error and no fabricated record.
+- Test missing optional tools by forcing the capability to unavailable. Assert the 503 response and that unrelated modules still work.
+- Security tests: oversized upload, wrong extension, binary garbage, zero-byte file, path-traversal filename, extreme atom counts.
+- Test names describe behaviour. No skipped test without a reason string and an entry in docs/KNOWN_LIMITATIONS.md.
+- While iterating run the narrowest relevant tests. Run the full suite before declaring anything done.

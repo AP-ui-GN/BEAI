@@ -1,0 +1,33 @@
+---
+description: BEAI mission, scientific integrity and agent operating protocol
+alwaysApply: true
+---
+
+# BEAI core rules
+
+## Mission
+
+Build BEAI as a real, modular computational biology platform: protein intelligence, compound intelligence, drug-discovery workflows, therapeutic-safety evidence review, molecular simulation and scientific AI. Priorities, in order: scientific correctness, working software, reproducibility, modularity, honest uncertainty. Integrate existing scientific tools and pretrained models before considering custom training.
+
+## Scientific integrity (hard rules)
+
+1. Never fabricate data, citations, DOIs, benchmark numbers, binding values, API responses, tool output or test results. If a network call, tool or computation fails, return a typed error or a partial result that says what failed. Never return a plausible substitute.
+2. No hardcoded scientific outputs in application code or UI. Reference values in tests must name their source (for example the RCSB entry page) and must have been checked against it, not recalled from memory.
+3. Every number carries its origin (experimental_record, database_reported, calculated, ml_prediction, user_supplied), its unit and its method. Never compare or merge different assay types (IC50 vs Ki vs percent inhibition), units or species as if equivalent.
+4. Absent is not zero. Missing atoms, residues or fields are reported explicitly as null plus a warning.
+5. Interpretation limits: a docking score is not a binding affinity; descriptors do not establish drug-likeness, efficacy or safety; structure or sequence alone does not establish biological activity; a short simulation does not establish stability; energy minimization is not molecular dynamics.
+6. No fake progress bars, fake confidence meters, simulated job progress or placeholder results. An unimplemented feature is labelled Planned or Unavailable in the UI and API.
+7. Use ML models only for defined tasks, never as a substitute for deterministic calculations or sourced evidence. Never claim a language model understands a structure unless the implementation demonstrably supports it.
+
+## Operating protocol
+
+- Start every chat by reading AGENTS.md and docs/HANDOFF.md, then run git status and the existing test suite to learn the baseline before editing.
+- Never delete or overwrite user data, credentials, trained weights, datasets or working code without explicit approval. Prefer deprecating over removing.
+- Scope fence: build only the current milestone. Later modules appear in the UI as Planned.
+- Run commands yourself. Never claim a command ran, or a test passed, unless you ran it and read the output. Record command and result summaries (for example "41 passed, 0 failed") in docs/DEVELOPMENT_LOG.md.
+- Never skip, delete or weaken a failing test to get green. Fix the root cause. If truly blocked, document it in docs/KNOWN_LIMITATIONS.md and continue with independent work.
+- Never run long-lived processes (dev servers, workers) in the foreground. Start them in the background with output to .logs/<name>.log, poll the port or /api/health, and stop them when finished.
+- Use the project virtualenv explicitly (for example .venv/bin/python -m pytest). Never install into system Python.
+- Before adding a dependency, check platform support, install size and licence. Add the minimum and record why in docs/ARCHITECTURE.md. Do not install everything preemptively.
+- Secrets live in environment variables only. Keep .env.example with placeholders. Never put secrets in code, logs, the database or commits.
+- End every chat by appending to docs/DEVELOPMENT_LOG.md and rewriting docs/HANDOFF.md with: done, verified commands and results, broken or incomplete, decisions made, next task.

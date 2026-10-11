@@ -1,0 +1,19 @@
+---
+description: Python backend standards for BEAI (FastAPI, SQLAlchemy, services)
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Backend standards
+
+- Type-hint everything. Use Pydantic v2 models for all request and response bodies. Follow the repo's linter and formatter (Ruff if present).
+- Routes are thin: validate, call a service, return a schema. No scientific calculation in route handlers.
+- Services are deterministic and side-effect-light: take parsed objects or paths plus explicit config, return result objects. No hidden global state. Seeds are explicit parameters.
+- Optional dependencies (RDKit, mkdssp, Vina, OpenMM, PyTorch) are detected in one capabilities module that returns {available, version, reason}. Import them lazily. A missing tool raises CapabilityUnavailable, which maps to HTTP 503 with a readable message. Never crash at import time.
+- Domain errors map to status codes: InvalidInput 422, NotFound 404, ExternalServiceError 502, CapabilityUnavailable 503. Never return tracebacks, file paths or secrets. Log details server-side with a request id.
+- Uploads: enforce a configurable maximum size (default 50 MB) while streaming, check extension and content, store under server-generated UUID names, never build paths from client filenames, never exec, eval or unpickle uploaded content, and parse inside try/except with limits on atom counts.
+- Database: SQLAlchemy 2.0 style, an Alembic migration for every schema change, UTC timestamps, large artifacts on disk with path and sha256 stored in the row.
+- Configuration through pydantic-settings, validated at startup. Fail fast with a readable message.
+- Structured logging, no secrets, no raw uploaded content. Bind to 127.0.0.1 by default with a CORS allowlist, and add authentication before exposing the app beyond localhost.
+- Conventions: coordinates in angstroms, mass in daltons, energies with explicit units. Put units in field names or a units field.
+- Every scientific function documents its algorithm, units and source in the docstring.

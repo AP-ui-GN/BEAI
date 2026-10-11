@@ -1,0 +1,20 @@
+---
+description: React and TypeScript frontend standards for BEAI
+globs: frontend/**/*.ts,frontend/**/*.tsx
+alwaysApply: false
+---
+
+# Frontend standards
+
+- TypeScript strict mode, no any. Derive API types from the backend OpenAPI schema or one shared types module.
+- Every view implements loading, empty and error states. Show backend error messages.
+- No dead buttons. A control either works or is disabled with a tooltip: "Planned" or "Unavailable: <reason from /api/health>".
+- Show only values returned by the API. No hardcoded sample results in components. Demo data exists only in test fixtures and is labelled as such.
+- Progress indicators come only from real job progress fields. Otherwise use an indeterminate spinner.
+- No confidence meters unless the backend returns a documented, calibrated quantity.
+- Next to every number show its unit and an origin badge (Experimental record, Database-reported, Calculated, ML prediction). Every result view has a Limitations panel.
+- Isolate the 3D viewer in one wrapper component. Dispose it on unmount. Chain and residue selections come from API data.
+- Accessibility: labelled inputs, visible keyboard focus, aria-live for job status, adequate contrast, never colour alone.
+- Responsive down to 375 px width.
+- One API client module. Abort requests on unmount.
+- Tests: Vitest for logic and components, one Playwright smoke test for upload, view, report download.

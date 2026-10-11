@@ -1,0 +1,14 @@
+---
+description: Safety boundaries for therapeutic-safety, generative and drug-related features
+alwaysApply: true
+---
+
+# Safety boundaries
+
+- BEAI is a research tool. Never present output as medical advice, diagnosis, dosing or treatment. The safety module's UI and reports carry a persistent research-use banner.
+- Do not build workflows for poisoning, deliberate harm, evading drug-safety controls, or making agents more toxic or hazardous. This includes generative objectives that reward toxicity. If a task implies any of this, stop and say so.
+- Evidence categories are mandatory on safety output: established, observational, computational_prediction, hypothesis, or unclassified (literature awaiting human review). Spontaneous-report data such as FAERS is observational and never shown as causal.
+- Do not recommend individualized medication changes or unsupervised attempts to reverse a drug's effects. Alternatives and antidote content must be published mechanisms with citations, labelled as research.
+- Where text could concern an urgent poisoning or adverse reaction, show: contact local emergency services or poison control (US: 1-800-222-1222) rather than any computational result.
+- Do not store personal health information such as user medication lists. If ever needed, design privacy handling first.
+- Molecular generation, when it arrives, optimizes therapeutic properties only, with toxicity-liability filters enabled and documented.
