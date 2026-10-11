@@ -4,6 +4,8 @@ import { Layout } from "@/components/Layout"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Dashboard } from "@/pages/Dashboard"
 import { PlannedRoute } from "@/pages/Planned"
+import { ProteinExplorer } from "@/pages/ProteinExplorer"
+import { ResearchLibrary } from "@/pages/ResearchLibrary"
 
 export default function App() {
   return (
@@ -12,15 +14,8 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
-            <Route
-              path="proteins"
-              element={
-                <PlannedRoute
-                  title="Protein Explorer"
-                  summary="Upload, measurement tables, and the 3D viewer are the next part of this milestone. This page has no upload control yet."
-                />
-              }
-            />
+            <Route path="proteins" element={<ProteinExplorer />} />
+            <Route path="proteins/:structureId" element={<ProteinExplorer />} />
             <Route
               path="compounds"
               element={
@@ -64,15 +59,7 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="library"
-              element={
-                <PlannedRoute
-                  title="Research Library"
-                  summary="Saved analyses and report downloads will be listed here. The dashboard already shows analyses returned by the API."
-                />
-              }
-            />
+            <Route path="library" element={<ResearchLibrary />} />
             <Route
               path="models"
               element={

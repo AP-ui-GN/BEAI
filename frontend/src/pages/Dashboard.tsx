@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 
 import { apiGet } from "@/api/client"
 import { Badge } from "@/components/ui/badge"
@@ -139,7 +140,13 @@ export function Dashboard() {
                 {analyses.slice(0, 8).map((item) => (
                   <li key={item.id} className="flex items-baseline justify-between gap-3 text-sm">
                     <span>
-                      <span className="font-medium">{item.structure_filename ?? item.kind}</span>
+                      {item.structure_id ? (
+                        <Link className="font-medium underline" to={`/proteins/${item.structure_id}`}>
+                          {item.structure_filename ?? item.kind}
+                        </Link>
+                      ) : (
+                        <span className="font-medium">{item.kind}</span>
+                      )}
                       <span className="text-muted-foreground"> · {item.kind}</span>
                     </span>
                     <span className="mono text-xs">{item.status}</span>

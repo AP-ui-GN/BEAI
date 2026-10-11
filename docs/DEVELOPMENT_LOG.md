@@ -94,3 +94,10 @@ Health on a fresh SQLite file reports `degraded` because there is no Alembic rev
 - `npm --prefix frontend test` — **4 passed, 0 failed** (Vitest).
 - `npm --prefix frontend run build` — `tsc -b && vite build` completed.
 - Areas other than the dashboard are Planned pages with no action buttons. Protein Explorer is still planned in this commit.
+
+## 2026-10-11 — Milestone 1, Protein Explorer and viewer
+
+- 3Dmol.js 2.5.5 is isolated in `frontend/src/components/StructureViewer.tsx`.
+- Protein Explorer uploads a file, runs `structure_overview`, and shows chains, composition, measurements, missing data, limitations, and report links.
+- `npm --prefix frontend test` — **7 passed, 0 failed**.
+- `npx tsc -b` in `frontend` — exit 0.
