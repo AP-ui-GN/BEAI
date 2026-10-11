@@ -86,3 +86,11 @@ Health on a fresh SQLite file reports `degraded` because there is no Alembic rev
 - `GET /api/analyses/{id}/report?format=html|md|json` renders the stored `AnalysisResult` with Jinja2. HTML autoescape is on.
 - `.venv/bin/python -m pytest` — **34 passed, 0 failed**, 1 warning (Starlette `TestClient` / `httpx2`).
 - A TITLE containing `<script>alert("xss")</script>` is escaped in the HTML report and unchanged in the JSON report.
+
+## 2026-10-11 — Milestone 1, frontend shell and dashboard
+
+- Frontend toolchain is Node v22.23.3 with npm 10.9.9 from `/home/ubuntu/.nvm/versions/node/v22.23.3`. That pair is used on purpose so `node` and `npm` belong to the same install. The `node` binary earlier on `PATH` was v22.14.0.
+- Vite dev server is configured for `127.0.0.1:8732` and proxies `/api` to `127.0.0.1:8731`.
+- `npm --prefix frontend test` — **4 passed, 0 failed** (Vitest).
+- `npm --prefix frontend run build` — `tsc -b && vite build` completed.
+- Areas other than the dashboard are Planned pages with no action buttons. Protein Explorer is still planned in this commit.

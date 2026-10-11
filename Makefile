@@ -14,6 +14,10 @@ setup:
 
 test:
 	.venv/bin/python -m pytest
+	npm --prefix frontend test
+
+frontend:
+	npm --prefix frontend run dev
 
 migrate:
 	.venv/bin/python -m alembic -c backend/alembic.ini upgrade head
