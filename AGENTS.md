@@ -20,9 +20,9 @@ No project manifest exists yet, so these defaults stand. See `docs/ARCHITECTURE.
 
 ## Layout
 
-### As-is (verified 2026-10-11)
+### As-is (verified 2026-10-11, Milestone 1)
 
-The repository has no application code. `git ls-tree -r main` is empty (`1c0b99b`, "Initialize project"). Tracked files are `AGENTS.md`, `.cursorignore`, six files under `.cursor/rules/`, seven slash commands under `.cursor/commands/`, and the kickoff documents under `docs/`. There is no `backend/`, `frontend/`, `tests/`, README, dependency manifest, virtualenv, database, or CI.
+`main` is still empty (`1c0b99b`). Milestone 1 lives on `m1-foundation`, branched from `cursor/beai-kickoff-rules-c3c0`. The app is a FastAPI backend and a Vite/React frontend. Science for this milestone is `structure_overview` only. SQLite and uploaded files live under gitignored `data/`.
 
 ### Target layout (create only what the current milestone needs)
 
@@ -42,14 +42,16 @@ The repository has no application code. `git ls-tree -r main` is empty (`1c0b99b
 
 ## Commands (verified 2026-10-11)
 
-No install, start, test, or migrate command exists. Nothing below was runnable. Do not replace these lines until a later chat has run the command and recorded the output in `docs/DEVELOPMENT_LOG.md`.
+Run from the repository root. On this machine, put Node v22.23.3 ahead of `PATH` so `node` and `npm` match (`/home/ubuntu/.nvm/versions/node/v22.23.3/bin`). Results are in `docs/DEVELOPMENT_LOG.md`.
 
-- Install backend: not present (no `pyproject.toml`, requirements file, or `.venv`)
-- Run backend: not present (no backend entrypoint)
-- Run frontend: not present (no `package.json` or `frontend/`)
-- Run backend tests: not present (`pytest` is not on PATH; no `tests/` directory)
-- Run frontend tests: not present (no `package.json`)
-- Migrate database: not present (no Alembic project)
+- Install backend: `/usr/bin/python3 -m venv .venv && .venv/bin/python -m pip install -U pip && .venv/bin/python -m pip install -e ".[dev]"`
+- Migrate database: `.venv/bin/python -m alembic -c backend/alembic.ini upgrade head`
+- Run backend: `.venv/bin/uvicorn backend.app.main:app --host 127.0.0.1 --port 8731`
+- Install frontend: `npm --prefix frontend install`
+- Run frontend: `npm --prefix frontend run dev` (serves `http://127.0.0.1:8732` and proxies `/api`)
+- Backend tests: `.venv/bin/python -m pytest` — 34 passed, 0 failed
+- Frontend unit tests: `npm --prefix frontend test` — 7 passed, 0 failed
+- Browser smoke test: `npm --prefix frontend run e2e` with both servers already running — 1 passed, 0 failed
 
 ## Shared result schema (AnalysisResult)
 

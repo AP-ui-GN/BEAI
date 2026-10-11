@@ -101,3 +101,18 @@ Health on a fresh SQLite file reports `degraded` because there is no Alembic rev
 - Protein Explorer uploads a file, runs `structure_overview`, and shows chains, composition, measurements, missing data, limitations, and report links.
 - `npm --prefix frontend test` — **7 passed, 0 failed**.
 - `npx tsc -b` in `frontend` — exit 0.
+
+## 2026-10-11 — Milestone 1, end-to-end test and docs
+
+Servers were started with logs in `.logs/backend.log` and `.logs/frontend.log`.
+
+- `GET http://127.0.0.1:8731/api/health` — HTTP 200, status ok, revision `0001_initial`. RDKit, mkdssp, Vina, OpenMM, PyTorch, and GPU were `available: false` with reasons. No versions were invented.
+- `curl -F file=@backend/tests/fixtures/1UBQ.pdb` to `POST /api/structures` — HTTP 201, format pdb, 78570 bytes, title `STRUCTURE OF UBIQUITIN REFINED AT 1.8 ANGSTROMS RESOLUTION`, chain A.
+- `POST /api/structures/{id}/analyses` with `{"kind":"structure_overview"}` — HTTP 201, status succeeded, 76 polymer residues, 58 waters, resolution 1.8, R-free null.
+- `GET /api/analyses/{id}` matched that create response. After uvicorn was stopped and started again, the same GET was identical.
+- `GET /api/analyses/{id}/report?format=html` — HTTP 200, `Content-Disposition: attachment`, title present, no raw `<script>` tag.
+- `.venv/bin/python -m pytest` — **34 passed, 0 failed** (2+8+4+3+8+9). One Starlette/`httpx2` warning.
+- `npm --prefix frontend test` — **7 passed, 0 failed**.
+- `npm --prefix frontend run e2e` — **1 passed, 0 failed**.
+- UI search for `Math.random`, `random(`, `setTimeout`, and `setInterval` in `backend/` and `frontend/src` — no matches. The only `placeholder` hit is the Tailwind class `placeholder:text-muted-foreground` in the shadcn input. Controls are listed in `docs/HANDOFF.md`. None are unwired.
+- Playwright Chromium unpacked to about 681 MB. Recorded in `docs/KNOWN_LIMITATIONS.md`. Firefox and WebKit were not installed. PyTorch, OpenMM, and Vina were not installed.

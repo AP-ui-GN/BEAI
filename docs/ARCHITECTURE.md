@@ -1,10 +1,32 @@
 # BEAI architecture
 
-Date: 2026-10-11. The repository has no application. This document is the proposed scaffold. It does not create that scaffold.
+Date: 2026-10-11. Milestone 1 is implemented on `m1-foundation`. The sections below the decision records describe what was proposed at kickoff; the "Milestone 1 as built" section is what the code does now.
 
-## As-is
+## Milestone 1 as built
 
-There is no running system. `main` (`1c0b99b`) contains no files. This branch adds agent rules and these docs only.
+The browser talks only to FastAPI on `127.0.0.1:8731`. Vite on `127.0.0.1:8732` proxies `/api`. `structure_overview` runs inside the request and still writes an `Analysis` row through `pending` → `running` → `succeeded` or `failed`. Reports are Jinja2 HTML (autoescape on), Markdown, and JSON from the stored `AnalysisResult` only.
+
+Direct Python packages, pinned to the versions pip installed, and the licence metadata those wheels reported:
+
+| Package | Version | Licence metadata |
+| --- | --- | --- |
+| fastapi | 0.143.0 | MIT |
+| uvicorn | 0.54.0 | BSD-3-Clause |
+| pydantic | 2.14.1 | MIT |
+| SQLAlchemy | 2.1.4 | MIT |
+| alembic | 1.20.0 | MIT |
+| biopython | 1.88 | Biopython licence agreement |
+| Jinja2 | 3.1.6 | (wheel metadata field empty) |
+| python-multipart | 0.0.32 | Apache-2.0 |
+| numpy (via Biopython) | 2.5.4 | BSD-3-Clause AND others |
+
+The project `.venv` is about 219 MB. Playwright's unpacked browser cache on this machine is about 681 MB (Chrome for Testing zip 191 MB, headless shell zip 120 MB, ffmpeg zip 2.2 MB). That unpacked size is above the roughly 500 MB ask-first line. It was measured after `npx playwright install chromium` finished. No PyTorch, OpenMM, or Vina was installed.
+
+Node v22.23.3 and npm 10.9.9 from the same nvm prefix are the frontend toolchain. `node` on the default `PATH` is v22.14.0 and is not used for `npm` scripts.
+
+## As-is at kickoff
+
+There was no running system. `main` (`1c0b99b`) contains no files. The kickoff branch added agent rules and docs only.
 
 What exists:
 
@@ -14,7 +36,7 @@ What exists:
 - `.cursorignore` — `data/`, `models/`, `.venv/`, `node_modules/`, `.logs/`, `.env`
 - `docs/` — this kickoff
 
-What does not exist: an API, a database, a frontend, a viewer, jobs, reports, fixtures, tests, CI, or a virtualenv.
+What did not exist at kickoff: an API, a database, a frontend, a viewer, jobs, reports, fixtures, tests, CI, or a virtualenv. Milestone 1 added those except CI.
 
 ## Target architecture
 
