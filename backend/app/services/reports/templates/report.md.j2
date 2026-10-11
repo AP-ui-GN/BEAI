@@ -1,0 +1,58 @@
+BEAI is research software. This report is not medical advice, a diagnosis, dosing guidance, or a treatment recommendation.
+
+# {{ kind }}
+
+Analysis {{ analysis_id }}
+
+Status: {{ status }}
+
+## Timestamps
+
+Created: {{ created_at }}
+
+## Inputs and validation
+
+{% for item in inputs %}
+- {{ item.role }}: {{ item.filename }} ({{ item.validation_status }}; sha256 {{ item.sha256 }})
+{% endfor %}
+
+## Methods and versions
+
+{% for method in methods %}
+- {{ method.name }} — {{ method.software }} {{ method.version }}
+{% endfor %}
+
+{% for name, version in reproducibility.software_versions.items() %}
+- {{ name }} {{ version }}
+{% endfor %}
+
+## Measurements
+
+| Name | Value | Unit | Origin | Method |
+| --- | --- | --- | --- | --- |
+{% for measurement in measurements %}
+| {{ measurement.name }} | {{ measurement.value | format_value }} | {{ measurement.unit | format_value }} | {{ measurement.origin }} | {{ measurement.method }} |
+{% endfor %}
+
+## Missing data
+
+{% for measurement in measurements if measurement.value is none %}
+- {{ measurement.name }} is null. {{ measurement.method }}
+{% endfor %}
+{% for warning in warnings %}
+- {{ warning }}
+{% endfor %}
+
+## Limitations
+
+{% for item in limitations %}
+- {{ item }}
+{% endfor %}
+
+## Reproducibility
+
+Config hash: {{ reproducibility.config_hash }}
+
+Platform: {{ reproducibility.platform }}
+
+Random seed: {{ reproducibility.random_seed | format_value }}

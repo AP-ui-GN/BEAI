@@ -1,6 +1,9 @@
 """Analysis routes. Scientific work stays in the structure service."""
 
-from fastapi import APIRouter, Depends, Request
+from typing import Literal
+
+from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings
@@ -16,6 +19,7 @@ from backend.app.schemas.analysis import (
     AnalysisResult,
     AnalysisSummary,
 )
+from backend.app.services.reports.render import render_report
 from backend.app.services.structure.analyses import get_analysis, list_analyses, run_structure_overview
 
 router = APIRouter(tags=["analyses"])
@@ -78,3 +82,21 @@ def get_analysis_by_id(
 ) -> AnalysisDetail:
     row, filename = get_analysis(session, analysis_id)
     return _detail(row, filename)
+
+
+@router.get("/api/analyses/{analysis_id}/report")
+def download_report(
+    analysis_id: str,
+    report_format: Literal["html", "md", "json"] = Query(alias="format"),
+    session: Session = Depends(get_session),
+) -> Response:
+    row, _filename = get_analysis(session, analysis_id)
+    if row.result_json is None:
+        raise InvalidInput("This analysis has no stored result to report.")
+    body, media_type, suffix = render_report(row.result_json, report_format)
+    download_name = f"beai-{row.id}.{suffix}"
+    return Response(
+        content=body,
+        media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
+    )

@@ -80,3 +80,9 @@ Health on a fresh SQLite file reports `degraded` because there is no Alembic rev
 - Bundled chemical-component files for the 20 standard amino acids plus MSE from `https://files.rcsb.org/ligands/download/{ID}.cif` the same day. Required heavy atoms exclude hydrogens and atoms with `pdbx_leaving_atom_flag` Y (OXT).
 - `.venv/bin/python -m pytest` — **31 passed, 0 failed**, 1 warning (Starlette `TestClient` / `httpx2`).
 - `.venv/bin/ruff check backend` — passed.
+
+## 2026-10-11 — Milestone 1, reports
+
+- `GET /api/analyses/{id}/report?format=html|md|json` renders the stored `AnalysisResult` with Jinja2. HTML autoescape is on.
+- `.venv/bin/python -m pytest` — **34 passed, 0 failed**, 1 warning (Starlette `TestClient` / `httpx2`).
+- A TITLE containing `<script>alert("xss")</script>` is escaped in the HTML report and unchanged in the JSON report.

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BEAI analysis {{ analysis_id }}</title>
+</head>
+<body>
+  <p>BEAI is research software. This report is not medical advice, a diagnosis, dosing guidance, or a treatment recommendation.</p>
+  <h1>{{ kind }}</h1>
+  <p>Analysis {{ analysis_id }}</p>
+  <p>Status {{ status }}</p>
+  <h2>Timestamps</h2>
+  <p>Created {{ created_at }}</p>
+
+  <h2>Inputs and validation</h2>
+  <ul>
+    {% for item in inputs %}
+    <li>
+      {{ item.role }}: {{ item.filename }}
+      ({{ item.validation_status }}; sha256 {{ item.sha256 }})
+      {% for message in item.validation_messages %}<span>{{ message }}</span>{% endfor %}
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h2>Methods and versions</h2>
+  <ul>
+    {% for method in methods %}
+    <li>{{ method.name }} — {{ method.software }} {{ method.version }}</li>
+    {% endfor %}
+  </ul>
+  <h3>Software versions</h3>
+  <ul>
+    {% for name, version in reproducibility.software_versions.items() %}
+    <li>{{ name }} {{ version }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Measurements</h2>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Value</th><th>Unit</th><th>Origin</th><th>Method</th></tr>
+    </thead>
+    <tbody>
+      {% for measurement in measurements %}
+      <tr>
+        <td>{{ measurement.name }}</td>
+        <td>{{ measurement.value | format_value }}</td>
+        <td>{{ measurement.unit | format_value }}</td>
+        <td>{{ measurement.origin }}</td>
+        <td>{{ measurement.method }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Missing data</h2>
+  <ul>
+    {% for measurement in measurements if measurement.value is none %}
+    <li>{{ measurement.name }} is null. {{ measurement.method }}</li>
+    {% endfor %}
+    {% for warning in warnings %}
+    <li>{{ warning }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Limitations</h2>
+  <ul>
+    {% for item in limitations %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Reproducibility</h2>
+  <p>Config hash {{ reproducibility.config_hash }}</p>
+  <p>Platform {{ reproducibility.platform }}</p>
+  <p>Random seed {{ reproducibility.random_seed | format_value }}</p>
+
+  {% if errors %}
+  <h2>Errors</h2>
+  <ul>
+    {% for error in errors %}
+    <li>{{ error.code }}: {{ error.message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</body>
+</html>
