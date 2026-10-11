@@ -48,3 +48,20 @@ No README or manifest documents install, start, test, or migrate. No server was 
 ### Docs written
 
 `docs/AUDIT.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `docs/SCIENTIFIC_VALIDATION.md`, `docs/KNOWN_LIMITATIONS.md`, `docs/DEVELOPMENT_LOG.md`, `docs/HANDOFF.md`. `AGENTS.md` command TODOs replaced with the verified "not present" lines, and an as-is layout section added. `.cursor/rules/` not modified.
+
+## 2026-10-11 — Milestone 1, backend skeleton and health
+
+Baseline before edits: `git status` was clean on `cursor/beai-kickoff-rules-c3c0` at `526a53f`. No test suite existed (`pytest` was not installed; no `tests/` directory). Work continues on branch `m1-foundation`.
+
+### Install
+
+- Created `.venv` with `/usr/bin/python3 -m venv .venv` (Python 3.12.3). Nothing was installed into system Python.
+- `.venv/bin/python -m pip install -U pip` then installed the direct packages recorded in `pyproject.toml`. `.venv` is about 218 MB.
+- `.venv/bin/python -m pip install -e ".[dev]"`.
+
+### Tests
+
+- `.venv/bin/ruff check backend` — all checks passed.
+- `.venv/bin/python -m pytest` — **6 passed, 0 failed**, 1 warning (`StarletteDeprecationWarning`: Starlette's `TestClient` prefers `httpx2`; tests still ran on `httpx==0.28.1`).
+
+Health on a fresh SQLite file reports `degraded` because there is no Alembic revision yet. RDKit, mkdssp, Vina, OpenMM, PyTorch, and GPU are `available: false` with `version: null` and a reason. No server was left running for this step.
