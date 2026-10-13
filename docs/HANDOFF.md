@@ -1,43 +1,41 @@
 # Handoff
 
-Date: 2026-10-13. Session 6B protein embeddings are on `m6b-embeddings`, branched from `m6a-registry`. Sessions 6C–6F have not started.
+Date: 2026-10-13. Session 6C solubility models are on `m6c-properties`, branched from `m6b-embeddings`. Sessions 6D–6F have not started.
 
 ## Current state
 
-Alembic head is `0007_embeddings`. With `BEAI_REGISTER_BUILTINS` left at its default, startup inserts the ESM-2 8M registry row and does not load weights. The checkpoint on this machine is `models/esm2_t6_8M_UR50D/model.safetensors` (sha256 `24c5fa474c48f3b754b86efe752d5f189d2bcd88190fa2270fc92b2ef3034189`). Embeddings are mean-pooled residue states, origin `ml_prediction`, label "not experimental". Sequences over 1026 tokens, including special tokens, are refused and not truncated. Neighbours are cosine similarity of stored vectors.
+Alembic head is still `0007_embeddings`. The solubility registry row is inserted at startup with the other builtins and is not trained or loaded then. Training is `POST /api/models/{id}/train`. The artifact, when a job finishes, is gitignored `models/esol/`. Predictions from `POST /api/models/{id}/predict` are `ml_prediction`, labelled not experimental, and carry a Morgan Tanimoto applicability flag at 0.3. The descriptor Ridge, Morgan Ridge, and two-layer GCN are all returned. On the Delaney scaffold split the GCN R-squared is negative.
 
 API: `http://127.0.0.1:8731`. App: `http://127.0.0.1:8732`.
 
 ## Verified
 
-- `.venv/bin/python -m pytest` — 94 passed, 2 deselected (`network` and `model`), 0 failed.
-- `.venv/bin/python -m pytest --override-ini addopts= -m model backend/tests/test_embeddings_model.py` — 1 passed. Spearman 0.6990131578947367, interval 0.3788637829986782 to 0.8820213682475236, 28 pairs, seed 20261013, 1000 resamples.
-- `npm --prefix frontend test` — 9 passed, 0 failed.
-- `npm --prefix frontend run build` — completed.
-- A pre-registered ESM row stayed unloaded across startup. The loader was not called.
+- `.venv/bin/python -m pytest` — 98 passed, 3 deselected (`network` twice and `model`), 0 failed.
+- `npm --prefix frontend test` — 9 passed, 0 failed. `npm --prefix frontend run build` completed.
+- `.venv/bin/python -m pytest --override-ini addopts= -m network backend/tests/test_solubility.py::test_esol_held_out_metrics` — 1 passed.
+- Descriptor Ridge test RMSE 1.3217993772506413, Morgan Ridge 1.6696791869919676, GCN 2.5347372633569814. Bootstrap intervals are in `docs/SCIENTIFIC_VALIDATION.md`.
 
 ## Broken or incomplete
 
-- No solubility model, OpenMM simulation, generation, or workflow runner.
-- OpenMM and fpocket are not installed.
-- The Milestone 4 5–10 complex heavy-atom RMSD table was not run.
+- OpenMM is not installed. Simulation Center is still a planned page.
+- fpocket is absent. The Milestone 4 5–10 complex RMSD table was not run.
 - Open Targets, DailyMed, and Europe PMC were not built.
+- The Delaney CSV is not in git. A machine without `data/solubility/delaney-processed.csv` cannot train until that file is downloaded and matches the checksum.
 - Playwright was not re-run.
-- The embedding correlation is a small curated set. It is not a functional or structural result.
 
 ## Decisions
 
-- CPU torch 2.9.1+cpu from `https://download.pytorch.org/whl/cpu`, not the PyPI CUDA wheel. Transformers 5.19.0.
-- The loader is `EsmForMaskedLM`. The masked-language-model head is not used. A random pooler from `EsmModel` is not used.
-- J maps to `<unk>` in this vocab, so the embedding is refused instead of stored.
-- Plumbing tests use a 20-d amino-acid composition stub. That stub is not ESM-2.
+- Ridge alpha, fingerprint size, GCN width, epochs, and learning rate were fixed before the test metrics. They were not searched.
+- The GCN is reported even though it is worse than the descriptor baseline on this split.
+- Artifacts are numpy and safetensors, not a pickle.
+- The published ESOL prediction column is not a model input.
 
 ## Next task
 
-Session 6C, property prediction, from this branch. Use a public solubility set with a recorded checksum and licence, save a scaffold split before training, and report a descriptor or fingerprint baseline beside any neural model. Predictions stay `ml_prediction` and are labelled not experimental.
+Session 6D, OpenMM, from this branch. If OpenMM cannot be installed, simulation endpoints return 503 and the rest of the suite stays green. Do not invent a trajectory.
 
 ## UI controls
 
-- Model Laboratory: hardware, registry rows, load, unload, and download when `can_download` is true. Embed is offered for a ready or loaded model and lists stored sequences. Empty sequence copy is shown when none are stored. Results show the API label and origin.
-- Earlier protein, compound, discovery, and safety controls remain.
-- Simulation Center is still a planned page.
+- Model Laboratory: train is shown for the solubility row. After `trained` is true, a SMILES form posts a prediction and shows origin badges, the not-experimental label, and the applicability flag from the API.
+- Embedding controls from session 6B remain.
+- Simulation Center is still planned.

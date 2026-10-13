@@ -30,6 +30,16 @@ The CPU torch wheel was installed with:
 | tokenizers | 0.23.3 | Apache (classifier) | |
 | huggingface_hub | 2.2.0 | Apache-2.0 | Installed with transformers. BEAI downloads with httpx, not this client |
 
+## Solubility models (session 6C)
+
+`POST /api/models/{id}/train` on the solubility registry row fits two scikit-learn Ridge models and a two-layer GCN. The artifact is `models/esol/` (gitignored): `ridge.npz` and `gnn.safetensors`. Predictions are loaded on demand. The test split is not used to choose alpha, fingerprint size, GCN width, epoch count, or learning rate.
+
+| Package | Version | Licence metadata | Notes |
+| --- | --- | --- | --- |
+| scikit-learn | 1.9.1 | BSD-3-Clause | Ridge baselines. Package directory about 49 MB |
+| joblib | 1.6.0 | BSD-3-Clause | Installed with scikit-learn. The artifact uses numpy and safetensors, not a pickle |
+| torch-geometric | 2.8.1 | MIT | Package directory about 13 MB. Installed cleanly on this CPU torch build |
+
 ## Evidence categories (Milestone 5)
 
 | Category | What is allowed to use it |

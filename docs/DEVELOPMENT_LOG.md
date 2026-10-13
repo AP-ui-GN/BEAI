@@ -144,6 +144,14 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
 - `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
 
+## 2026-10-13 — Milestone 6 session 6C, solubility models
+
+- Delaney CSV downloaded from the DeepChem `load_delaney` URL. sha256 `8c06a76f0c6487d29ab0f903e6a7a7139f189ab3c1178f159c8be8964602f189`, 96699 bytes. The file has no licence line. DeepChem's LICENSE is MIT for the software.
+- Installed scikit-learn 1.9.1 (BSD-3-Clause, package directory about 49 MB) and torch-geometric 2.8.1 (MIT, about 13 MB).
+- Scaffold split seed 20261013: 902 train, 226 test, 0 dropped. Descriptor Ridge test RMSE 1.3217993772506413, Morgan Ridge 1.6696791869919676, two-layer GCN 2.5347372633569814 (R-squared -0.4764081172372039). A second seed-matched run stayed within 1e-6. The GCN result is worse than the mean of the test labels and is recorded as produced.
+- `.venv/bin/python -m pytest` — **98 passed, 3 deselected, 0 failed**. `npm --prefix frontend test` — **9 passed**. `npm --prefix frontend run build` completed.
+- `.venv/bin/python -m pytest --override-ini addopts= -m network backend/tests/test_solubility.py::test_esol_held_out_metrics` — 1 passed.
+
 ## 2026-10-13 — Milestone 6 session 6B, protein embeddings
 
 - ESM-2 8M model card read before use: MIT licence, `max_position_embeddings` 1026. `model.safetensors` sha256 `24c5fa474c48f3b754b86efe752d5f189d2bcd88190fa2270fc92b2ef3034189` matched the Hub LFS oid. 31384292 bytes. The pickle weight file was not downloaded.

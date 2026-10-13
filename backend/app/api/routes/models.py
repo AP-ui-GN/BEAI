@@ -4,15 +4,20 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from backend.app.api.routes.analyses import _detail
+from backend.app.api.routes.jobs import get_runner, to_job_response
 from backend.app.core.errors import CapabilityUnavailable, InvalidInput
-from backend.app.db.models import Job
+from backend.app.db.models import Analysis, Job
 from backend.app.db.session import get_session
+from backend.app.schemas.analysis import AnalysisDetail
+from backend.app.schemas.job import JobResponse
 from backend.app.schemas.model_registry import (
     DownloadResponse,
     HardwareReport,
     ModelCreate,
     ModelListResponse,
     ModelResponse,
+    PredictRequest,
 )
 from backend.app.services.embeddings.download import ensure_checkpoint
 from backend.app.services.models_registry.hardware import read_hardware
@@ -23,6 +28,8 @@ from backend.app.services.models_registry.registry import (
     register_model,
 )
 from backend.app.services.models_registry.runtime import ModelRuntime
+from backend.app.services.properties.constants import SPLIT_SEED
+from backend.app.services.properties.predict import prediction_result
 
 router = APIRouter(prefix="/api/models", tags=["models"])
 
@@ -62,6 +69,49 @@ def get_model(model_id: str, request: Request, session: Session = Depends(get_se
     hardware = read_hardware()
     jobs = list(session.scalars(select(Job).where(Job.kind == "model_training")))
     return ModelResponse.model_validate(model_view(row, _runtime(request), hardware, jobs))
+
+
+@router.post("/{model_id}/train", status_code=202, response_model=JobResponse)
+def train_model(model_id: str, request: Request, session: Session = Depends(get_session)) -> JobResponse:
+    row = get_model_row(session, model_id)
+    if row.loader_key != "solubility":
+        raise InvalidInput("Only the solubility model can be trained from this endpoint.")
+    job = get_runner(request).submit(
+        "solubility_training",
+        {"model_id": row.id, "seed": SPLIT_SEED, "require_checksum": True},
+    )
+    return to_job_response(job)
+
+
+@router.post("/{model_id}/predict", status_code=201, response_model=AnalysisDetail)
+def predict_model(
+    model_id: str,
+    body: PredictRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+) -> AnalysisDetail:
+    from datetime import UTC, datetime
+
+    row = get_model_row(session, model_id)
+    if row.loader_key != "solubility":
+        raise InvalidInput("This model does not predict solubility.")
+    artifact = _runtime(request).load(row)
+    predicted = artifact["predict"](body.smiles)
+    result = prediction_result(row, body.smiles, predicted)
+    now = datetime.now(UTC)
+    analysis = Analysis(
+        id=result["analysis_id"],
+        kind="solubility_prediction",
+        status="succeeded",
+        created_at=now,
+        started_at=now,
+        completed_at=now,
+        result_json=result,
+        error_json=None,
+    )
+    session.add(analysis)
+    session.commit()
+    return _detail(analysis, None)
 
 
 @router.post("/{model_id}/download", response_model=DownloadResponse)

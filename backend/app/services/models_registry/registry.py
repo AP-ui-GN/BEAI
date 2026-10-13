@@ -96,7 +96,11 @@ def model_view(
     if missing:
         status = "disabled"
         status_reason = " ".join(missing)
-    elif row.weights_relative and not _weights_on_disk(row.weights_relative):
+    elif (
+        row.weights_relative
+        and row.loader_key != "solubility"
+        and not _weights_on_disk(row.weights_relative)
+    ):
         status = "disabled"
         status_reason = "The weight file for this model is not on disk."
     elif not compatibility["compatible"]:
@@ -138,6 +142,8 @@ def model_view(
         "loader_key": row.loader_key,
         "token_limit": row.token_limit,
         "can_download": row.loader_key == "esm2_8m",
+        "can_train": row.loader_key == "solubility",
+        "trained": row.loader_key == "solubility" and _weights_on_disk("esol/gnn.safetensors"),
         "status": status,
         "status_reason": status_reason,
         "loaded": loaded,

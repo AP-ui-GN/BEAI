@@ -2,6 +2,14 @@
 
 Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 
+## Session 6C
+
+- Solubility outputs are ML predictions. The UI and the method text say they are not experimental measurements.
+- The two-layer GCN had a negative R-squared on the scaffold test split. It is reported beside the Ridge baselines and was not tuned to change that.
+- Applicability uses a pre-registered maximum Morgan Tanimoto of 0.3 against the training set. That threshold was not fit to the test labels.
+- The Delaney CSV is not committed. Training checks the recorded sha256. The file itself has no licence line.
+- OpenMM is still not installed. fpocket is still absent. The Milestone 4 5–10 complex RMSD table was not run. Open Targets, DailyMed, and Europe PMC were not built.
+
 ## Session 6B
 
 - ESM-2 8M embeddings are not experimental measurements and are not evidence of function or structure. The rank correlation in `docs/SCIENTIFIC_VALIDATION.md` is one small curated set.

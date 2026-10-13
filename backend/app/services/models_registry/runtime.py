@@ -50,6 +50,10 @@ def invoke_loader(row: RegisteredModel) -> dict[str, Any]:
         from backend.app.services.embeddings.esm import load_esm
 
         return load_esm(row)
+    if row.loader_key == "solubility":
+        from backend.app.services.properties.predict import load_solubility
+
+        return load_solubility(row)
     if row.loader_key != "registry_only":
         raise CapabilityUnavailable(f"No loader is registered for {row.loader_key}.")
     if not row.weights_relative:

@@ -167,6 +167,8 @@ export type RegisteredModel = {
   known_limitations: string
   token_limit: number | null
   can_download: boolean
+  can_train: boolean
+  trained: boolean
   status: "disabled" | "incompatible" | "ready" | "loaded"
   status_reason: string | null
   loaded: boolean

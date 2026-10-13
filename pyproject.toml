@@ -23,6 +23,7 @@ dependencies = [
     "meeko==0.8.0",
     "gemmi==0.7.5",
     "psutil==7.2.2",
+    "scikit-learn==1.9.1",
 ]
 
 [project.optional-dependencies]
@@ -35,6 +36,7 @@ dev = [
 models = [
     "torch==2.9.1+cpu",
     "transformers==5.19.0",
+    "torch-geometric==2.8.1",
 ]
 
 [tool.setuptools.packages.find]

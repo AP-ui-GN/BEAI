@@ -109,7 +109,21 @@ Identity is `identity_including_gaps` from Biopython `PairwiseAligner` global al
 
 Command: `.venv/bin/python -m pytest --override-ini addopts= -m model backend/tests/test_embeddings_model.py` — 1 passed. This is rank agreement with sequence identity on that set. It is not a functional or structural result.
 
-Solubility, OpenMM, and generation have no results yet.
+### Solubility (session 6C)
+
+Dataset: `delaney-processed.csv` from `https://deepchemdata.s3-us-west-1.amazonaws.com/datasets/delaney-processed.csv`, the URL in DeepChem's `load_delaney` as retrieved 2026-10-13. sha256 `8c06a76f0c6487d29ab0f903e6a7a7139f189ab3c1178f159c8be8964602f189`, 96699 bytes, 1128 data rows. The CSV has no licence line. DeepChem's repository LICENSE is MIT for the software. The loader names the table as Delaney, J. Chem. Inf. Comput. Sci. 44 (2004) 1000-1005. The target column is `measured log solubility in mols per litre`. The column `ESOL predicted log solubility in mols per litre` was not used as a feature or as a prediction.
+
+Split, chosen before fitting: Murcko scaffolds kept together, scaffolds shuffled with numpy Generator seed 20261013, test side filled until at least 20 percent of rows. Result of that split: 902 train, 226 test, 0 rows dropped. Ridge `alpha` 1.0 was not tuned. Morgan fingerprints are radius 2 and 2048 bits from `GetMorganGenerator`. The GCN is two layers, hidden size 32, 20 epochs, Adam learning rate 0.01, seed 20261013, and was not tuned on the test split. Bootstrap: 1000 resamples, seed 20261013, 2.5 and 97.5 percentiles. All 1000 resamples were finite for every metric below.
+
+| Model | RMSE | MAE | R-squared |
+| --- | --- | --- | --- |
+| Descriptor Ridge | 1.3217993772506413 (1.147560194604866 to 1.4920541722551173) | 1.0004937427916745 (0.8907326010644745 to 1.1141110380395272) | 0.5985128816471968 (0.45973007459714554 to 0.7074329222377606) |
+| Morgan Ridge | 1.6696791869919676 (1.506008911536875 to 1.8300778122281194) | 1.3029135097542737 (1.1760270767204246 to 1.4366200664112465) | 0.3593709962979724 (0.1757942096236605 to 0.4941057951191802) |
+| Two-layer GCN | 2.5347372633569814 (2.3179658213153536 to 2.7474698037745178) | 2.056036578614957 (1.8600800380376539 to 2.264292208255532) | -0.4764081172372039 (-0.7456244760034777 to -0.2633770633818176) |
+
+Intervals are the bootstrap percentiles. A second run with the same seed matched RMSE within 1e-6. The GCN R-squared is negative on this split: it did worse than the mean of the test labels. That result is the one the run produced. None of these numbers are experimental solubilities.
+
+OpenMM and generation have no results yet.
 
 - Embeddings: on a small curated pair set, rank correlation between embedding cosine similarity and pairwise alignment identity, with a bootstrap interval. No functional or structural claim.
 - Solubility: public set such as ESOL, checksum and licence recorded, scaffold split saved with its seed, baseline beside any neural model, RMSE, MAE, and R-squared with bootstrap intervals.

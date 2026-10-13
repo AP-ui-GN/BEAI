@@ -11,6 +11,60 @@ function gibibytes(bytes: number): string {
   return (bytes / 1024 ** 3).toFixed(2)
 }
 
+function SolubilityForm({ modelId }: { modelId: string }) {
+  const [smiles, setSmiles] = useState("")
+  const [result, setResult] = useState<AnalysisDetail | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
+  const label = result?.result?.details?.label
+  const domain = result?.result?.details?.in_applicability_domain
+
+  async function predict(event: { preventDefault: () => void }) {
+    event.preventDefault()
+    setMessage(null)
+    try {
+      const detail = await apiPost<AnalysisDetail>(`/api/models/${modelId}/predict`, { smiles })
+      setResult(detail)
+    } catch (caught) {
+      setResult(null)
+      setMessage(caught instanceof Error ? caught.message : "The prediction failed.")
+    }
+  }
+
+  return (
+    <form className="space-y-2" onSubmit={(event) => void predict(event)}>
+      <h3 className="text-base">Solubility prediction</h3>
+      <p className="text-sm">Not an experimental measurement.</p>
+      <label className="text-sm" htmlFor={`smiles-${modelId}`}>
+        SMILES
+      </label>
+      <input
+        id={`smiles-${modelId}`}
+        className="w-full rounded border px-2 py-1 text-sm"
+        value={smiles}
+        onChange={(event) => setSmiles(event.target.value)}
+      />
+      <Button type="submit">Predict log solubility</Button>
+      {message ? <p role="alert">{message}</p> : null}
+      {typeof label === "string" ? <p>{label}</p> : null}
+      {typeof domain === "boolean" ? (
+        <p className="text-sm">{domain ? "Inside the applicability domain." : "Outside the applicability domain."}</p>
+      ) : null}
+      {result?.result?.measurements.map((measurement) => (
+        <p key={measurement.name} className="text-sm">
+          {measurement.name} <OriginBadge origin={measurement.origin} /> {String(measurement.value)}{" "}
+          {measurement.unit ?? ""}
+          {measurement.uncertainty == null ? "" : ` uncertainty ${measurement.uncertainty}`}
+        </p>
+      ))}
+      {result?.result?.limitations.map((item) => (
+        <p key={item} className="text-sm">
+          {item}
+        </p>
+      ))}
+    </form>
+  )
+}
+
 function EmbeddingForm({
   model,
   sequences,
@@ -144,6 +198,28 @@ export function ModelLaboratory() {
       )
     } catch (caught) {
       setActionError(caught instanceof ApiError ? caught.message : "The model request failed.")
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  async function train(model: RegisteredModel) {
+    setActionError(null)
+    setBusyId(model.id)
+    try {
+      const job = await apiPost<{ id: string; status: string }>(`/api/models/${model.id}/train`, {})
+      let status = job.status
+      while (status === "pending" || status === "running") {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        const current = await apiGet<{ status: string; progress: number | null }>(`/api/jobs/${job.id}`)
+        status = current.status
+      }
+      if (status !== "succeeded") {
+        setActionError(`Training finished with status ${status}.`)
+      }
+      load()
+    } catch (caught) {
+      setActionError(caught instanceof ApiError ? caught.message : "Training could not be started.")
     } finally {
       setBusyId(null)
     }
@@ -327,7 +403,13 @@ export function ModelLaboratory() {
                   Download weights
                 </Button>
               ) : null}
+              {model.can_train ? (
+                <Button type="button" variant="outline" disabled={busyId === model.id} onClick={() => void train(model)}>
+                  Train solubility models
+                </Button>
+              ) : null}
             </div>
+            {model.trained ? <SolubilityForm modelId={model.id} /> : null}
             {model.status === "ready" || model.status === "loaded" ? (
               <EmbeddingForm
                 model={model}
