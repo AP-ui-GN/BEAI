@@ -1,6 +1,20 @@
 # BEAI architecture
 
-Date: 2026-10-11. Milestone 1 is implemented on `m1-foundation`. The sections below the decision records describe what was proposed at kickoff; the "Milestone 1 as built" section is what the code does now.
+Date: 2026-10-13. Milestone 2 is implemented on `m2-protein`. The "Milestone 1 as built" section is unchanged history. The "Milestone 2 as built" section is what the code does now.
+
+## Milestone 2 as built
+
+Protein work adds an in-process job runner, sequence statistics, DSSP or P-SEA secondary structure, Shrake-Rupley SASA, contacts, hydrogen-bond estimates, C-alpha superposition, a baseline pocket detector, and RCSB/UniProt import. Optional tools that are still absent stay on `/api/health` with a reason. Pocket detection and comparison run as jobs. A missing fpocket install skips that stage and still runs the baseline detector.
+
+Direct packages added for this milestone, and the licence metadata their wheels reported:
+
+| Package | Version | Licence metadata | Notes |
+| --- | --- | --- | --- |
+| biotite | 1.6.0 | BSD-3-Clause | P-SEA fallback. The installed package directory is about 132 MB |
+| biotraj | 1.2.2 | LGPL-2.1 | Pulled in by Biotite. Not imported by BEAI directly |
+| httpx | 0.28.1 | BSD-3-Clause | Shared external HTTP client. Already present as a test dependency |
+
+`mkdssp` 4.2.2 is the Ubuntu `dssp` package (installed size about 6.4 MB, BSD-2-Clause, homepage https://github.com/PDB-REDO/dssp). It is not a pip package. The project `.venv` is about 526 MB after Biotite. fpocket is not installed.
 
 ## Milestone 1 as built
 

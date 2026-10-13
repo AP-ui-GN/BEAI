@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 
 import { apiGet, apiPost } from "@/api/client"
 import { CompositionChart } from "@/components/CompositionChart"
+import { ProteinPanels } from "@/components/ProteinPanels"
 import { OriginBadge } from "@/components/OriginBadge"
 import { StructureViewer } from "@/components/StructureViewer"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -64,7 +65,10 @@ export function StructureDetail({ structureId }: { structureId: string }) {
         .then(async ([structureBody, analysesBody, text]) => {
           setStructure(structureBody)
           setFileText(text)
-          const match = analysesBody.analyses.find((item) => item.structure_id === structureId)
+          const forStructure = analysesBody.analyses.filter((item) => item.structure_id === structureId)
+          const match =
+            forStructure.find((item) => item.kind === "structure_overview" && item.status === "succeeded") ??
+            forStructure[0]
           if (!match) {
             setAnalysis(null)
             return
@@ -220,6 +224,14 @@ export function StructureDetail({ structureId }: { structureId: string }) {
               </p>
             ) : null}
           </section>
+
+          {result ? (
+            <ProteinPanels
+              structureId={structureId}
+              result={result}
+              onHighlight={(residue) => setHighlight({ chainId: residue.chainId, resseq: residue.resseq, missing: false })}
+            />
+          ) : null}
 
           <section className="flex flex-wrap gap-2" aria-label="Report downloads">
             {(["html", "md", "json"] as const).map((format) => (

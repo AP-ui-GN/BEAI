@@ -1,6 +1,18 @@
 # Known limitations
 
-Date: 2026-10-11. Limits of the Milestone 1 build. They are not scientific results.
+Date: 2026-10-13. Limits after Milestone 2. They are not scientific results.
+
+## Milestone 2
+
+- The pocket detector is a grid heuristic. Held-out success was 3 of 5 at the pre-registered 4.0 Å centroid cutoff. 1FKF, 2PK4, 1TLP, and 4DFR failed. It is not a general binding-site predictor.
+- fpocket is not installed. Pocket jobs skip that stage and say so.
+- Relative SASA is not reported. No maximum-accessibility table is cited.
+- Hydrogen bonds are backbone heavy-atom estimates. 1UBQ has no hydrogens.
+- P-SEA is only the fallback. A file that is not valid PDB or mmCIF can make Biopython's DSSP wrapper warn and then fail over; the overview still records which algorithm ran.
+- UniProt import stores the full returned sequence. P62988 is inactive (demerged) and is rejected with the successor accessions from the API. It is not silently replaced.
+- Sequence mass is an average mass with terminal water included. It is not monoisotopic and not an experimental mass.
+- Jobs are an in-process thread pool. There is still no separate worker service. Progress is null until a handler reports a fraction.
+- Compound routes, docking, safety retrieval, and models are still unbuilt.
 
 ## Milestone 1 scope
 
@@ -23,8 +35,8 @@ Date: 2026-10-11. Limits of the Milestone 1 build. They are not scientific resul
 ## Environment
 
 - Project packages are installed in `.venv` (about 219 MB), created from `/usr/bin/python3` 3.12.3. They were not installed into system site-packages.
-- Not importable on this machine: RDKit, Biotite, OpenMM, PyTorch. Biopython 1.88 is installed.
-- `pytest` and `ruff` are inside `.venv`, not on the default `PATH`. Still absent from `PATH`: mkdssp, dssp, vina, obabel.
+- Not importable on this machine: RDKit, OpenMM, PyTorch. Biopython 1.88 and Biotite 1.6.0 are installed.
+- `pytest` and `ruff` are inside `.venv`, not on the default `PATH`. `mkdssp` 4.2.2 is on PATH from the Ubuntu `dssp` package. Still absent from `PATH`: vina, obabel, fpocket.
 - uv and conda are not installed. The planned installer is pip inside `.venv`.
 - No NVIDIA GPU (`nvidia-smi` absent). CUDA-only tools and GPU model loading are unavailable.
 - Memory: 15 GiB total, about 4.9 GiB available at inspection, no swap. A model whose declared footprint exceeds free RAM must be refused.
@@ -34,7 +46,7 @@ Date: 2026-10-11. Limits of the Milestone 1 build. They are not scientific resul
 
 ## Data and tools the app will miss until later milestones
 
-- Secondary structure cannot use DSSP until `mkdssp` is installed. The planned fallback is Biotite P-SEA, and the method record has to say which one ran.
+- Secondary structure uses DSSP when `mkdssp` is on PATH and Biotite P-SEA otherwise. The method record names which one ran.
 - Docking cannot run until Vina and a preparation route exist. The API must say so with HTTP 503. No pose will be invented.
 - Simulation cannot run until OpenMM is installed. Same 503 rule.
 - Compound routes cannot run until RDKit is installed. Same 503 rule.

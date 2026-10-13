@@ -116,3 +116,15 @@ Servers were started with logs in `.logs/backend.log` and `.logs/frontend.log`.
 - `npm --prefix frontend run e2e` — **1 passed, 0 failed**.
 - UI search for `Math.random`, `random(`, `setTimeout`, and `setInterval` in `backend/` and `frontend/src` — no matches. The only `placeholder` hit is the Tailwind class `placeholder:text-muted-foreground` in the shadcn input. Controls are listed in `docs/HANDOFF.md`. None are unwired.
 - Playwright Chromium unpacked to about 681 MB. Recorded in `docs/KNOWN_LIMITATIONS.md`. Firefox and WebKit were not installed. PyTorch, OpenMM, and Vina were not installed.
+
+## 2026-10-13 — Milestone 2, protein intelligence
+
+Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest` **34 passed, 0 failed**.
+
+- Installed Ubuntu `dssp` 4.2.2 (`mkdssp`, BSD-2-Clause, about 6.4 MB) and pinned Biotite 1.6.0 (BSD-3-Clause, package directory about 132 MB) plus httpx 0.28.1. The `.venv` is about 526 MB. fpocket was not installed.
+- `.venv/bin/python -m pytest` — **55 passed, 1 deselected, 0 failed**. The deselected test is marked `network`.
+- `.venv/bin/python -m pytest --override-ini addopts= -m network backend/tests/test_retrieval.py` — **1 passed, 0 failed**. Live RCSB 1UBQ and UniProt P62987.
+- `npm --prefix frontend test` — **7 passed, 0 failed**. `npm --prefix frontend run build` completed.
+- 1UBQ DSSP, SASA, mass, and the pocket benchmark numbers are in `docs/SCIENTIFIC_VALIDATION.md`. They were copied from the commands in this entry's tests, not typed from memory.
+- Pocket parameters were changed once using only the tuning set, after protein radius 1.7 Å left the core unfilled. Held-out success was 3/5, including the failures.
+- The protein UI polls `GET /api/jobs/{id}` on a timer while a real job is running. The timer is not a progress value. Progress shown in the UI is the number the job row returns, or blank when that number is null.

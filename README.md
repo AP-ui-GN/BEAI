@@ -1,6 +1,6 @@
 # BEAI
 
-BEAI is local research software for protein coordinate files. Milestone 1 uploads a PDB or mmCIF file, computes a structure overview from that file, shows it in a 3Dmol.js viewer, stores the analysis in SQLite, and downloads HTML, Markdown, and JSON reports.
+BEAI is local research software for protein coordinate files and sequences. It uploads a PDB or mmCIF file, computes a structure overview (including DSSP or P-SEA, SASA, contacts, and backbone angles), shows it in a 3Dmol.js viewer, stores the analysis in SQLite, and downloads HTML, Markdown, and JSON reports. Sequences can be pasted or imported from UniProt. Pockets and chain comparison run as jobs.
 
 It is not a clinical tool and does not give medical advice.
 
@@ -40,6 +40,7 @@ The Playwright smoke test needs both servers running and the Chromium browser Pl
 ## Troubleshooting
 
 - `GET /api/health` reports `degraded` and mentions `alembic_version` when the database has not been migrated. Run the Alembic command above.
-- RDKit, mkdssp, Vina, OpenMM, PyTorch, and GPU stay `available: false` until those tools are installed. Milestone 1 does not need them. The protein overview still runs.
+- RDKit, Vina, OpenMM, PyTorch, fpocket, and GPU stay unavailable until those tools are installed. On this machine `mkdssp` 4.2.2 and Biotite are installed, so secondary structure uses DSSP. Without `mkdssp`, the same overview falls back to Biotite P-SEA and says so.
+- Default `pytest` skips tests marked `network`. Run `.venv/bin/python -m pytest -m network` for the live RCSB and UniProt import.
 - Uploads over the configured limit return HTTP 413. The default limit is 50 MB (`BEAI_MAX_UPLOAD_BYTES`).
 - The HTML report escapes text from the file, including a `TITLE` that contains a script tag. Open reports as downloads, not as a place to paste untrusted HTML into the app.

@@ -64,6 +64,15 @@
     {% endfor %}
   </ul>
 
+  {% if details is defined and details %}
+  <h2>Detail sections</h2>
+  <ul>
+    {% for name in details %}
+    <li>{{ name }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
   <h2>Limitations</h2>
   <ul>
     {% for item in limitations %}

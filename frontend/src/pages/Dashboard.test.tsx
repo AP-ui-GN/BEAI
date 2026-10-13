@@ -24,7 +24,11 @@ describe("Dashboard", () => {
       "fetch",
       vi.fn(async (input: RequestInfo | URL) => {
         const url = String(input)
-        const body = url.endsWith("/api/analyses") ? { analyses: [] } : health
+        const body = url.endsWith("/api/analyses")
+          ? { analyses: [] }
+          : url.endsWith("/api/jobs")
+            ? { jobs: [] }
+            : health
         return new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } })
       }),
     )

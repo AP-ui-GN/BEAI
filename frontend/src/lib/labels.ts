@@ -13,7 +13,9 @@ export function originLabel(origin: string): string {
 export function capabilityLabel(key: string): string {
   const labels: Record<string, string> = {
     rdkit: "RDKit",
+    biotite: "Biotite",
     mkdssp: "DSSP (mkdssp)",
+    fpocket: "fpocket",
     vina: "AutoDock Vina",
     openmm: "OpenMM",
     pytorch: "PyTorch",

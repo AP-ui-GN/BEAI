@@ -43,6 +43,14 @@ Created: {{ created_at }}
 - {{ warning }}
 {% endfor %}
 
+{% if details is defined and details %}
+## Detail sections
+
+{% for name in details %}
+- {{ name }}
+{% endfor %}
+{% endif %}
+
 ## Limitations
 
 {% for item in limitations %}

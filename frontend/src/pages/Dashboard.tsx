@@ -6,13 +6,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { capabilityLabel } from "@/lib/labels"
-import type { AnalysisListResponse, HealthResponse } from "@/types"
+import type { AnalysisListResponse, HealthResponse, JobListResponse } from "@/types"
 
-const CAPABILITY_ORDER = ["rdkit", "mkdssp", "vina", "openmm", "pytorch", "gpu"]
+const CAPABILITY_ORDER = ["rdkit", "biotite", "mkdssp", "fpocket", "vina", "openmm", "pytorch", "gpu"]
 
 export function Dashboard() {
   const [health, setHealth] = useState<HealthResponse | null>(null)
   const [analyses, setAnalyses] = useState<AnalysisListResponse["analyses"]>([])
+  const [jobs, setJobs] = useState<JobListResponse["jobs"]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,10 +23,12 @@ export function Dashboard() {
     Promise.all([
       apiGet<HealthResponse>("/api/health", signal),
       apiGet<AnalysisListResponse>("/api/analyses", signal),
+      apiGet<JobListResponse>("/api/jobs", signal),
     ])
-      .then(([healthBody, analysisBody]) => {
+      .then(([healthBody, analysisBody, jobBody]) => {
         setHealth(healthBody)
         setAnalyses(analysisBody.analyses)
+        setJobs(jobBody.jobs)
       })
       .catch((caught: unknown) => {
         if (signal?.aborted) {
@@ -110,9 +113,24 @@ export function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Active jobs</CardTitle>
-            <CardDescription>Analyses whose status is pending or running.</CardDescription>
+            <CardDescription>Jobs and analyses whose status is pending or running.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
+            {jobs.length === 0 ? (
+              <p>No jobs have been stored.</p>
+            ) : (
+              <ul className="space-y-2">
+                {jobs.slice(0, 8).map((job) => (
+                  <li key={job.id} className="flex items-center justify-between gap-3 text-sm">
+                    <span>
+                      {job.kind}
+                      {job.progress === null ? "" : ` · ${job.progress}`}
+                    </span>
+                    <Badge variant="outline">{job.status}</Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
             {running.length === 0 ? (
               <p>No analysis is running.</p>
             ) : (

@@ -41,6 +41,24 @@ export type AnalysisListResponse = {
   analyses: AnalysisSummary[]
 }
 
+export type JobResponse = {
+  id: string
+  kind: string
+  status: string
+  progress: number | null
+  cancel_requested: boolean
+  created_at: string
+  started_at: string | null
+  completed_at: string | null
+  error: AnalysisErrorBody | null
+  analysis_id: string | null
+  structure_id: string | null
+}
+
+export type JobListResponse = {
+  jobs: JobResponse[]
+}
+
 export type Measurement = {
   name: string
   value: unknown
@@ -82,6 +100,7 @@ export type AnalysisResult = {
     config_hash: string
     platform: string
   }
+  details?: Record<string, unknown>
 }
 
 export type AnalysisDetail = AnalysisSummary & {

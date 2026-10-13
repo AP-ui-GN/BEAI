@@ -21,8 +21,8 @@ Provenance for the RCSB files: RCSB PDB data is CC0. Store the download URL and 
 
 | Check | Dataset | Metric | Acceptance | Result |
 | --- | --- | --- | --- | --- |
-| Length and mass | Ubiquitin FASTA copied from the 1UBQ record, not typed from memory | length; average mass | length 76; mass within 1 Da of a named independent calculator | not run |
-| Invalid alphabet | synthetic illegal characters | rejection | no sequence stored | not run |
+| Length and mass | Ubiquitin FASTA built from 1UBQ SEQRES and the bundled chemical-component one-letter codes | length; average mass | length 76; mass within 1 Da of an independent elemental sum | passed 2026-10-13. Length 76. Biopython average mass 8564.736 Da. Independent sum of free-amino-acid formulas (C 12.0107, H 1.00794, N 14.0067, O 15.9994, S 32.065) minus (n-1) water molecules was 8564.737 Da. Difference 0.00086 Da |
+| Invalid alphabet | synthetic illegal characters | rejection | no sequence stored | passed in the same suite. `ACDE1` returns HTTP 422 and the sequence list stays empty |
 
 State the mass convention in the test comment (average mass, terminal water included) and the pI method.
 
@@ -30,11 +30,11 @@ State the mass convention in the test comment (average mass, terminal water incl
 
 | Check | Dataset | Metric | Acceptance | Result |
 | --- | --- | --- | --- | --- |
-| Secondary structure | 1UBQ | helix and strand content versus file `HELIX` and `SHEET` records | algorithm name recorded; any difference explained here | not run |
-| SASA | 1UBQ | total SASA, two independent implementations | inside a tolerance written down before looking at the 1UBQ comparison | not run |
-| Superposition | analytic copies | C-alpha RMSD | self-fit and rotated-copy fit near 0 (tolerance 1e-6 Å); refuse below 3 pairs | not run |
+| Secondary structure | 1UBQ | helix and strand content versus file `HELIX` and `SHEET` records | algorithm name recorded; any difference explained here | passed 2026-10-13. mkdssp 4.2.2. Codes: H 12, G 6, I 0, E 24, B 2, T 12, S 4, P 4, loop 12. File HELIX ranges are 23–34 (class 1) and 56–59 (class 5). Overlap: both helix 15, computed-only helix 3, file-only helix 1; both strand 24, computed-only strand 2, file-only strand 9. DSSP uses hydrogen-bond patterns. The file records are depositor annotations, including a 3-10 helix class that DSSP can mark G rather than H. The counts are not expected to match |
+| SASA | 1UBQ | total SASA, two independent implementations | relative difference at most 20% of the Biopython total, chosen before the comparison | passed 2026-10-13. Biopython Shrake-Rupley, probe 1.4 Å, 100 points, waters excluded: 4893.04 Å². Biotite `sasa` with ProtOr radii, probe 1.4 Å, 100 points, waters excluded: 4834.72 Å². Relative difference 1.19% |
+| Superposition | analytic copies and 1UBQ against itself | C-alpha RMSD | self-fit and rotated-copy fit near 0 (tolerance 1e-6 Å); refuse below 3 pairs | passed 2026-10-13. Analytic self-fit and a 90-degree rotated copy were within 1e-6 Å. 1UBQ chain A against itself was within 1e-6 Å with 76 pairs. A two-residue chain failed the job and named the 3-pair minimum |
 
-Secondary structure uses DSSP if `mkdssp` exists, otherwise Biotite P-SEA. Today `mkdssp` is absent, so the planned algorithm is P-SEA until that changes. File-annotated helices and sheets are shown separately either way.
+Secondary structure uses DSSP if `mkdssp` exists, otherwise Biotite P-SEA. On 2026-10-13 `mkdssp` 4.2.2 was on PATH, so 1UBQ used DSSP. File-annotated helices and sheets are shown separately either way.
 
 SASA plan: Shrake-Rupley, probe radius 1.4 Å, radii set named in the method record. Relative SASA only if the maximum-accessibility table is cited.
 
