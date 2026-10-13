@@ -74,6 +74,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         runner.register("docking", run_docking_job)
         app.state.jobs = runner
         runner.start()
+        if app.state.settings.register_builtins:
+            from backend.app.services.embeddings.builtins import sync_builtin_models
+
+            session = app.state.session_factory()
+            try:
+                sync_builtin_models(session)
+            finally:
+                session.close()
         try:
             yield
         finally:

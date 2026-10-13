@@ -18,10 +18,13 @@ from backend.app.schemas.analysis import AnalysisDetail, AnalysisResult
 from backend.app.schemas.sequence import (
     SequenceAlignRequest,
     SequenceCreate,
+    SequenceEmbedRequest,
     SequenceImportRequest,
     SequenceListResponse,
     SequenceResponse,
 )
+from backend.app.services.embeddings.service import embed_sequence, neighbours
+from backend.app.services.models_registry.runtime import ModelRuntime
 from backend.app.services.sequence.align import align_sequences
 from backend.app.services.sequence.store import get_sequence, ingest_sequence_text, list_sequences
 
@@ -147,4 +150,40 @@ def align(
     session.add(analysis)
     session.commit()
     session.refresh(analysis)
+    return _detail(analysis, None)
+
+
+def _runtime(request: Request) -> ModelRuntime:
+    runtime = getattr(request.app.state, "model_runtime", None)
+    if runtime is None:
+        raise InvalidInput("The model runtime is not available.")
+    return runtime
+
+
+@router.post("/{sequence_id}/embeddings", status_code=201, response_model=AnalysisDetail)
+def create_embedding(
+    sequence_id: str,
+    body: SequenceEmbedRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+) -> AnalysisDetail:
+    sequence = get_sequence(session, sequence_id)
+    result = embed_sequence(session, _runtime(request), sequence, body.model_id)
+    analysis = session.get(Analysis, result["analysis_id"])
+    if analysis is None:
+        raise InvalidInput("The embedding analysis was not stored.")
+    return _detail(analysis, None)
+
+
+@router.get("/{sequence_id}/neighbours", response_model=AnalysisDetail)
+def embedding_neighbours(
+    sequence_id: str,
+    model_id: str,
+    session: Session = Depends(get_session),
+) -> AnalysisDetail:
+    sequence = get_sequence(session, sequence_id)
+    result = neighbours(session, sequence, model_id)
+    analysis = session.get(Analysis, result["analysis_id"])
+    if analysis is None:
+        raise InvalidInput("The neighbour analysis was not stored.")
     return _detail(analysis, None)

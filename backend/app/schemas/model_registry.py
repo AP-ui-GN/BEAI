@@ -35,7 +35,8 @@ class ModelCreate(BaseModel):
     known_limitations: str = Field(min_length=1)
     checksum_sha256: str | None = None
     weights_relative: str | None = None
-    loader_key: Literal["registry_only"] = "registry_only"
+    loader_key: Literal["registry_only", "embedding_stub", "esm2_8m"] = "registry_only"
+    token_limit: int | None = Field(default=None, gt=0)
 
     @field_validator("source_url")
     @classmethod
@@ -107,6 +108,8 @@ class ModelResponse(BaseModel):
     checksum_sha256: str | None
     weights_relative: str | None
     loader_key: str
+    token_limit: int | None
+    can_download: bool
     status: Literal["disabled", "incompatible", "ready", "loaded"]
     status_reason: str | None
     loaded: bool
@@ -122,3 +125,11 @@ class ModelListResponse(BaseModel):
 
     hardware: HardwareReport
     models: list[ModelResponse]
+
+
+class DownloadResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    downloaded: list[str]
+    checksum_sha256: str
+    size_bytes: int

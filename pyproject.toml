@@ -31,6 +31,11 @@ dev = [
     "httpx==0.28.1",
     "ruff==0.17.0",
 ]
+# CPU wheels come from https://download.pytorch.org/whl/cpu. PyPI's default torch wheel is not this build.
+models = [
+    "torch==2.9.1+cpu",
+    "transformers==5.19.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["backend*"]
@@ -41,8 +46,11 @@ include = ["backend*"]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
-addopts = "-q -m 'not network'"
-markers = ["network: live calls to public scientific APIs"]
+addopts = "-q -m 'not network and not model'"
+markers = [
+    "network: live calls to public scientific APIs",
+    "model: loads a real pretrained checkpoint",
+]
 
 [tool.ruff]
 line-length = 120

@@ -12,6 +12,24 @@ A missing Python or executable dependency sets status `disabled` and load return
 | --- | --- | --- | --- |
 | psutil | 7.2.2 | BSD-3-Clause | RAM report. Wheel about 155 kB. Installed package directory about 900 kB. Homepage https://github.com/giampaolo/psutil |
 
+## Embeddings (session 6B)
+
+ESM-2 8M (`facebook/esm2_t6_8M_UR50D`) is registered when `BEAI_REGISTER_BUILTINS` is true (the default). Startup inserts the row and does not load weights. `POST /api/models/{id}/download` fetches the fixed Hub files into gitignored `models/esm2_t6_8M_UR50D/` and checks sha256. `POST /api/sequences/{id}/embeddings` loads the checkpoint on that request. Neighbours are cosine similarity of stored vectors.
+
+The CPU torch wheel was installed with:
+
+```text
+.venv/bin/python -m pip install "torch==2.9.1+cpu" "transformers==5.19.0" --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+```
+
+| Package | Version | Licence metadata | Notes |
+| --- | --- | --- | --- |
+| torch | 2.9.1+cpu | BSD-3-Clause | Wheel 184.4 MB. Installed package directory about 725 MB |
+| transformers | 5.19.0 | Apache 2.0 | Package directory about 116 MB |
+| safetensors | 0.8.0 | Apache (classifier) | Weight format. The pickle checkpoint was not downloaded |
+| tokenizers | 0.23.3 | Apache (classifier) | |
+| huggingface_hub | 2.2.0 | Apache-2.0 | Installed with transformers. BEAI downloads with httpx, not this client |
+
 ## Evidence categories (Milestone 5)
 
 | Category | What is allowed to use it |

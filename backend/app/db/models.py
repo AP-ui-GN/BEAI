@@ -108,6 +108,23 @@ class RegisteredModel(Base):
     checksum_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     weights_relative: Mapped[str | None] = mapped_column(String, nullable=True)
     loader_key: Mapped[str] = mapped_column(String(64), nullable=False)
+    token_limit: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class SequenceEmbedding(Base):
+    """One stored embedding. The vector is an ML prediction, not a measurement."""
+
+    __tablename__ = "sequence_embeddings"
+    __table_args__ = (Index("uq_sequence_embeddings_sequence_model", "sequence_id", "model_id", unique=True),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    sequence_id: Mapped[str] = mapped_column(ForeignKey("sequences.id"), nullable=False)
+    model_id: Mapped[str] = mapped_column(ForeignKey("registered_models.id"), nullable=False)
+    model_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    input_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    vector_json: Mapped[list] = mapped_column(JSON, nullable=False)
+    label: Mapped[str] = mapped_column(String(64), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 

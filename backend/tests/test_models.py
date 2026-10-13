@@ -45,9 +45,9 @@ def test_no_models_is_an_empty_list(client: TestClient) -> None:
     assert report["ram_total_bytes"] == memory.total
     assert 0 < report["ram_available_bytes"] <= report["ram_total_bytes"]
     assert report["cuda"]["available"] is False
-    assert "PyTorch is not installed" in report["cuda"]["reason"]
+    assert report["cuda"]["reason"]
     assert report["mps"]["available"] is False
-    assert "PyTorch is not installed" in report["mps"]["reason"]
+    assert report["mps"]["reason"]
 
 
 def test_registered_model_is_listed_from_the_row(client: TestClient) -> None:

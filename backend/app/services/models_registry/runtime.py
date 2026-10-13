@@ -40,8 +40,16 @@ class ModelRuntime:
 
 
 def invoke_loader(row: RegisteredModel) -> dict[str, Any]:
-    """Run the loader named by the registry row. ``registry_only`` does not execute weights."""
+    """Run the loader named by the registry row. Importing this module does not load weights."""
 
+    if row.loader_key == "embedding_stub":
+        from backend.app.services.embeddings.stub import load_stub
+
+        return load_stub(row)
+    if row.loader_key == "esm2_8m":
+        from backend.app.services.embeddings.esm import load_esm
+
+        return load_esm(row)
     if row.loader_key != "registry_only":
         raise CapabilityUnavailable(f"No loader is registered for {row.loader_key}.")
     if not row.weights_relative:

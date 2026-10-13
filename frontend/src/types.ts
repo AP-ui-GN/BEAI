@@ -165,6 +165,8 @@ export type RegisteredModel = {
   output_format: string
   benchmark: Record<string, unknown> | null
   known_limitations: string
+  token_limit: number | null
+  can_download: boolean
   status: "disabled" | "incompatible" | "ready" | "loaded"
   status_reason: string | null
   loaded: boolean

@@ -2,12 +2,18 @@
 
 Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 
+## Session 6B
+
+- ESM-2 8M embeddings are not experimental measurements and are not evidence of function or structure. The rank correlation in `docs/SCIENTIFIC_VALIDATION.md` is one small curated set.
+- Sequences longer than 1026 tokens, including special tokens, are refused. They are not chunked.
+- J is a legal sequence letter here and is `<unk>` in this vocab, so those sequences are not embedded.
+- The declared 512 MiB RAM floor is not a measured peak.
+- OpenMM is still not installed. fpocket is still absent. The Milestone 4 5–10 complex RMSD table was not run. Open Targets, DailyMed, and Europe PMC were not built.
+
 ## Session 6A
 
-- No scientific model is registered and no weight file is shipped. The `registry_only` loader does not execute a weight file.
-- PyTorch and OpenMM are still not installed. CUDA and MPS are reported as not queried because PyTorch is absent. That is not a measurement of the GPU.
+- The `registry_only` loader does not execute a weight file.
 - Training jobs are shown only when a `model_training` row exists. Session 6A does not train anything.
-- fpocket is still absent. The Milestone 4 5–10 complex heavy-atom RMSD table was not run. Open Targets, DailyMed, and Europe PMC were not built.
 
 ## Milestone 2
 

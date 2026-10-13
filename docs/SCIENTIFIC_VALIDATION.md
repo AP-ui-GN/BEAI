@@ -93,7 +93,23 @@ Validation is provenance tests: label text stored verbatim, FAERS always observa
 
 ## Models and simulation (Milestone 6)
 
-Session 6A added the registry only. No embedding, solubility, simulation, or generation result has been produced. Stored benchmark fields stay null until a later session runs the check and writes the number here.
+### Embeddings (session 6B)
+
+Dataset: SEQRES one-letter chains from local RCSB fixtures `1UBQ.pdb`, `4HHB.pdb`, `pockets/3PTB.pdb`, `pockets/1STP.pdb`, `pockets/2GBP.pdb`, and `pockets/1HSG.pdb`. At most two chains per file. A chain is kept when every residue maps to a one-letter code other than X, the length is at least 20, and the length is at most `max_position_embeddings` 1026 minus 2. That rule was written in `backend/app/services/embeddings/benchmark.py` before the coefficient below was computed.
+
+Kept chains from the run on 2026-10-13: 1UBQ A 76, 4HHB A 141, 4HHB B 146, 3PTB A 223, 1STP A 159, 2GBP A 309, 1HSG A 99, 1HSG B 99. Eight sequences, 28 pairs.
+
+Identity is `identity_including_gaps` from Biopython `PairwiseAligner` global alignment, BLOSUM62, open gap -10, extend -1: identical non-gap letters divided by alignment columns. Embedding cosine uses the mean of the ESM-2 8M last hidden state over residue tokens. Spearman uses SciPy `spearmanr`. The interval is the 2.5 and 97.5 percentiles of 1000 resamples with seed 20261013. All 1000 resamples were finite.
+
+| Metric | Result |
+| --- | --- |
+| Spearman | 0.6990131578947367 |
+| 2.5 percentile | 0.3788637829986782 |
+| 97.5 percentile | 0.8820213682475236 |
+
+Command: `.venv/bin/python -m pytest --override-ini addopts= -m model backend/tests/test_embeddings_model.py` — 1 passed. This is rank agreement with sequence identity on that set. It is not a functional or structural result.
+
+Solubility, OpenMM, and generation have no results yet.
 
 - Embeddings: on a small curated pair set, rank correlation between embedding cosine similarity and pairwise alignment identity, with a bootstrap interval. No functional or structural claim.
 - Solubility: public set such as ESOL, checksum and licence recorded, scaffold split saved with its seed, baseline beside any neural model, RMSE, MAE, and R-squared with bootstrap intervals.

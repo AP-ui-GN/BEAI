@@ -1,27 +1,118 @@
 import { useCallback, useEffect, useState } from "react"
 
 import { ApiError, apiGet, apiPost } from "@/api/client"
+import { OriginBadge } from "@/components/OriginBadge"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ModelListResponse, RegisteredModel } from "@/types"
+import type { AnalysisDetail, ModelListResponse, RegisteredModel } from "@/types"
 
 function gibibytes(bytes: number): string {
   return (bytes / 1024 ** 3).toFixed(2)
 }
 
+function EmbeddingForm({
+  model,
+  sequences,
+  chosen,
+  onChoose,
+  result,
+  onEmbed,
+}: {
+  model: RegisteredModel
+  sequences: Array<{ id: string; header: string; length: number }>
+  chosen: string
+  onChoose: (sequenceId: string) => void
+  result: AnalysisDetail | null
+  onEmbed: (detail: AnalysisDetail) => void
+}) {
+  const [pending, setPending] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+  const label = result?.result?.details?.label
+
+  async function embed() {
+    if (!chosen) {
+      return
+    }
+    setPending(true)
+    setMessage(null)
+    try {
+      const detail = await apiPost<AnalysisDetail>(`/api/sequences/${chosen}/embeddings`, { model_id: model.id })
+      onEmbed(detail)
+    } catch (caught) {
+      setMessage(caught instanceof Error ? caught.message : "The embedding failed.")
+    } finally {
+      setPending(false)
+    }
+  }
+
+  return (
+    <section className="space-y-2">
+      <h3 className="text-base">Stored sequences</h3>
+      {sequences.length === 0 ? <p className="text-sm">No sequences are stored.</p> : null}
+      {sequences.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="text-sm" htmlFor={`sequence-${model.id}`}>
+            Sequence
+          </label>
+          <select
+            id={`sequence-${model.id}`}
+            className="rounded border px-2 py-1 text-sm"
+            value={chosen}
+            onChange={(event) => onChoose(event.target.value)}
+          >
+            <option value="">Choose a stored sequence</option>
+            {sequences.map((sequence) => (
+              <option key={sequence.id} value={sequence.id}>
+                {sequence.header} ({sequence.length})
+              </option>
+            ))}
+          </select>
+          <Button type="button" disabled={!chosen || pending} onClick={() => void embed()}>
+            Embed sequence
+          </Button>
+        </div>
+      ) : null}
+      {message ? <p role="alert">{message}</p> : null}
+      {typeof label === "string" ? <p>{label}</p> : null}
+      {result?.result?.measurements.map((measurement) => (
+        <p key={measurement.name} className="text-sm">
+          {measurement.name} <OriginBadge origin={measurement.origin} />
+          {Array.isArray(measurement.value) ? ` ${measurement.value.length} values` : ` ${String(measurement.value)}`}
+        </p>
+      ))}
+      {result?.result?.limitations.map((item) => (
+        <p key={item} className="text-sm">
+          {item}
+        </p>
+      ))}
+    </section>
+  )
+}
+
+type StoredSequence = { id: string; header: string; length: number }
+
 export function ModelLaboratory() {
   const [report, setReport] = useState<ModelListResponse | null>(null)
+  const [sequences, setSequences] = useState<StoredSequence[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [chosen, setChosen] = useState<Record<string, string>>({})
+  const [embeddings, setEmbeddings] = useState<Record<string, AnalysisDetail>>({})
 
   const load = useCallback((signal?: AbortSignal) => {
     setLoading(true)
     setError(null)
-    apiGet<ModelListResponse>("/api/models", signal)
-      .then((body) => setReport(body))
+    Promise.all([
+      apiGet<ModelListResponse>("/api/models", signal),
+      apiGet<{ sequences: StoredSequence[] }>("/api/sequences", signal),
+    ])
+      .then(([models, stored]) => {
+        setReport(models)
+        setSequences(stored.sequences)
+      })
       .catch((caught: unknown) => {
         if (signal?.aborted) {
           return
@@ -53,6 +144,19 @@ export function ModelLaboratory() {
       )
     } catch (caught) {
       setActionError(caught instanceof ApiError ? caught.message : "The model request failed.")
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  async function download(model: RegisteredModel) {
+    setActionError(null)
+    setBusyId(model.id)
+    try {
+      await apiPost<{ checksum_sha256: string }>(`/api/models/${model.id}/download`, {})
+      load()
+    } catch (caught) {
+      setActionError(caught instanceof ApiError ? caught.message : "The download failed.")
     } finally {
       setBusyId(null)
     }
@@ -162,11 +266,15 @@ export function ModelLaboratory() {
                 <dt className="text-muted-foreground">Hardware compatibility</dt>
                 <dd>{model.hardware_compatibility.compatible ? "Compatible with this machine" : "Not compatible"}</dd>
               </div>
-              <div>
-                <dt className="text-muted-foreground">Weights loaded</dt>
-                <dd>{model.weights_loaded ? "Yes" : "No"}</dd>
-              </div>
-            </dl>
+            <div>
+              <dt className="text-muted-foreground">Weights loaded</dt>
+              <dd>{model.weights_loaded ? "Yes" : "No"}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Token limit</dt>
+              <dd>{model.token_limit == null ? "None stored" : model.token_limit}</dd>
+            </div>
+          </dl>
             <section>
               <h3 className="text-base">Benchmark</h3>
               {model.benchmark == null ? (
@@ -209,7 +317,27 @@ export function ModelLaboratory() {
               >
                 Unload {model.name}
               </Button>
+              {model.can_download ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busyId === model.id}
+                  onClick={() => void download(model)}
+                >
+                  Download weights
+                </Button>
+              ) : null}
             </div>
+            {model.status === "ready" || model.status === "loaded" ? (
+              <EmbeddingForm
+                model={model}
+                sequences={sequences}
+                chosen={chosen[model.id] ?? ""}
+                onChoose={(sequenceId) => setChosen((current) => ({ ...current, [model.id]: sequenceId }))}
+                result={embeddings[model.id] ?? null}
+                onEmbed={(detail) => setEmbeddings((current) => ({ ...current, [model.id]: detail }))}
+              />
+            ) : null}
             {blocked && reason ? (
               <p id={`${model.id}-reason`} className="text-muted-foreground text-sm">
                 Unavailable: {reason}

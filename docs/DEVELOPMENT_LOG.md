@@ -144,6 +144,14 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
 - `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
 
+## 2026-10-13 — Milestone 6 session 6B, protein embeddings
+
+- ESM-2 8M model card read before use: MIT licence, `max_position_embeddings` 1026. `model.safetensors` sha256 `24c5fa474c48f3b754b86efe752d5f189d2bcd88190fa2270fc92b2ef3034189` matched the Hub LFS oid. 31384292 bytes. The pickle weight file was not downloaded.
+- Installed `torch==2.9.1+cpu` (BSD-3-Clause, wheel 184.4 MB, package directory about 725 MB) and `transformers==5.19.0` (Apache 2.0, package directory about 116 MB) from the PyTorch CPU index.
+- `.venv/bin/python -m pytest` — **94 passed, 2 deselected (`network` and `model`), 0 failed**.
+- `.venv/bin/python -m pytest --override-ini addopts= -m model backend/tests/test_embeddings_model.py` — **1 passed**. Spearman 0.6990131578947367 on 28 pairs, bootstrap interval 0.3788637829986782 to 0.8820213682475236, seed 20261013, 1000 resamples.
+- `npm --prefix frontend test` — **9 passed, 0 failed**. `npm --prefix frontend run build` completed.
+
 ## 2026-10-13 — Milestone 6 session 6A, model registry
 
 Baseline before edits: `m5-safety` at `65d80c7`. `.venv/bin/python -m pytest` — **78 passed, 1 deselected (`network`), 0 failed**.

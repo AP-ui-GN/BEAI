@@ -1,6 +1,12 @@
 # BEAI
 
-BEAI is local research software for protein coordinate files, sequences, compounds, docking, and sourced safety evidence. It uploads a PDB or mmCIF file, computes a structure overview (including DSSP or P-SEA, SASA, contacts, and backbone angles), shows it in a 3Dmol.js viewer, stores the analysis in SQLite, and downloads HTML, Markdown, and JSON reports. Sequences can be pasted or imported from UniProt. Pockets, chain comparison, and docking run as jobs. The Model Laboratory lists registered models and the live RAM report. No weights are loaded at startup.
+BEAI is local research software for protein coordinate files, sequences, compounds, docking, and sourced safety evidence. It uploads a PDB or mmCIF file, computes a structure overview (including DSSP or P-SEA, SASA, contacts, and backbone angles), shows it in a 3Dmol.js viewer, stores the analysis in SQLite, and downloads HTML, Markdown, and JSON reports. Sequences can be pasted or imported from UniProt. Pockets, chain comparison, and docking run as jobs. The Model Laboratory lists registered models and the live RAM report. No weights are loaded at startup. ESM-2 8M embeddings are optional and need the CPU torch install below. Weights stay in gitignored `models/`.
+
+```bash
+.venv/bin/python -m pip install "torch==2.9.1+cpu" "transformers==5.19.0" \
+  --index-url https://download.pytorch.org/whl/cpu \
+  --extra-index-url https://pypi.org/simple
+```
 
 It is not a clinical tool and does not give medical advice.
 

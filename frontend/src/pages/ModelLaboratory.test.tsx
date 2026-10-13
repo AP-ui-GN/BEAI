@@ -14,8 +14,10 @@ describe("ModelLaboratory", () => {
   it("shows an empty registry without inventing a model", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => {
-        return new Response(JSON.stringify({ hardware, models: [] }), {
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        const body = url.endsWith("/api/sequences") ? { sequences: [] } : { hardware, models: [] }
+        return new Response(JSON.stringify(body), {
           status: 200,
           headers: { "Content-Type": "application/json" },
         })
@@ -32,7 +34,14 @@ describe("ModelLaboratory", () => {
   it("shows a missing dependency as disabled with the reason", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => {
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.endsWith("/api/sequences")) {
+          return new Response(JSON.stringify({ sequences: [] }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          })
+        }
         return new Response(
           JSON.stringify({
             hardware,

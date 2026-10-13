@@ -19,7 +19,7 @@ def test_health_returns_real_status(client: TestClient) -> None:
     assert body["version"] == "0.1.0"
     assert body["status"] == "ok"
     assert body["database"]["connected"] is True
-    assert body["database"]["revision"] == body["database"]["head"] == "0006_models"
+    assert body["database"]["revision"] == body["database"]["head"] == "0007_embeddings"
     assert body["database"]["reason"] is None
     assert body["storage"]["writable"] is True
     assert body["storage"]["reason"] is None
@@ -56,7 +56,14 @@ def test_optional_tools_match_this_machine(client: TestClient) -> None:
         assert "not on PATH" in capabilities["vina"]["reason"]
     assert capabilities["meeko"]["available"] is True
     assert capabilities["openmm"]["available"] is False
-    assert capabilities["pytorch"]["available"] is False
+    torch_present = importlib.util.find_spec("torch") is not None
+    assert capabilities["pytorch"]["available"] is torch_present
+    if torch_present:
+        import torch
+
+        assert capabilities["pytorch"]["version"] == torch.__version__
+    else:
+        assert "not installed" in capabilities["pytorch"]["reason"]
     assert "nvidia-smi" in capabilities["gpu"]["reason"]
     mkdssp_present = shutil.which("mkdssp") is not None or shutil.which("dssp") is not None
     assert capabilities["mkdssp"]["available"] is mkdssp_present

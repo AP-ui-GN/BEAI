@@ -20,6 +20,7 @@ def settings(tmp_path: Path) -> Settings:
         max_atom_count=200_000,
         cors_origins="http://127.0.0.1:8732",
         ca_break_threshold_angstrom=4.5,
+        register_builtins=False,
     )
 
 

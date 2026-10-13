@@ -17,6 +17,12 @@ class SequenceImportRequest(BaseModel):
     accession: str
 
 
+class SequenceEmbedRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    model_id: str = Field(min_length=1)
+
+
 class SequenceAlignRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

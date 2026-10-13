@@ -7,7 +7,14 @@ from sqlalchemy.orm import Session
 from backend.app.core.errors import CapabilityUnavailable, InvalidInput
 from backend.app.db.models import Job
 from backend.app.db.session import get_session
-from backend.app.schemas.model_registry import HardwareReport, ModelCreate, ModelListResponse, ModelResponse
+from backend.app.schemas.model_registry import (
+    DownloadResponse,
+    HardwareReport,
+    ModelCreate,
+    ModelListResponse,
+    ModelResponse,
+)
+from backend.app.services.embeddings.download import ensure_checkpoint
 from backend.app.services.models_registry.hardware import read_hardware
 from backend.app.services.models_registry.registry import (
     get_model_row,
@@ -55,6 +62,14 @@ def get_model(model_id: str, request: Request, session: Session = Depends(get_se
     hardware = read_hardware()
     jobs = list(session.scalars(select(Job).where(Job.kind == "model_training")))
     return ModelResponse.model_validate(model_view(row, _runtime(request), hardware, jobs))
+
+
+@router.post("/{model_id}/download", response_model=DownloadResponse)
+def download_model(model_id: str, session: Session = Depends(get_session)) -> DownloadResponse:
+    row = get_model_row(session, model_id)
+    if row.loader_key != "esm2_8m":
+        raise InvalidInput("Only the registered ESM-2 8M checkpoint can be downloaded.")
+    return DownloadResponse.model_validate(ensure_checkpoint())
 
 
 @router.post("/{model_id}/load", response_model=ModelResponse)

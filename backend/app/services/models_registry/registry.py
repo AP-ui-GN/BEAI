@@ -52,6 +52,7 @@ def register_model(session: Session, payload: dict[str, Any]) -> RegisteredModel
         checksum_sha256=checksum,
         weights_relative=weights,
         loader_key=payload["loader_key"],
+        token_limit=payload.get("token_limit"),
         created_at=datetime.now(UTC),
     )
     session.add(row)
@@ -95,6 +96,9 @@ def model_view(
     if missing:
         status = "disabled"
         status_reason = " ".join(missing)
+    elif row.weights_relative and not _weights_on_disk(row.weights_relative):
+        status = "disabled"
+        status_reason = "The weight file for this model is not on disk."
     elif not compatibility["compatible"]:
         status = "incompatible"
         status_reason = " ".join(compatibility["reasons"])
@@ -132,6 +136,8 @@ def model_view(
         "checksum_sha256": row.checksum_sha256,
         "weights_relative": row.weights_relative,
         "loader_key": row.loader_key,
+        "token_limit": row.token_limit,
+        "can_download": row.loader_key == "esm2_8m",
         "status": status,
         "status_reason": status_reason,
         "loaded": loaded,
@@ -161,6 +167,7 @@ def render_card(view: dict[str, Any]) -> str:
         f"Input format: {view['input_format']}",
         f"Output format: {view['output_format']}",
         f"Loader: {view['loader_key']}",
+        f"Token limit: {view['token_limit'] if view['token_limit'] is not None else 'none stored'}",
         f"Hardware requirement: {view['hardware_requirements']}",
         "",
         "## Benchmark",
@@ -174,6 +181,14 @@ def render_card(view: dict[str, Any]) -> str:
         "Predictions from this entry use origin ml_prediction and are labelled not experimental.",
     ]
     return "\n".join(lines)
+
+
+def _weights_on_disk(relative: str) -> bool:
+    try:
+        path = resolve_weights_path(relative)
+    except InvalidInput:
+        return False
+    return path.is_file()
 
 
 def _dependency_status(item: dict[str, Any]) -> dict[str, Any]:

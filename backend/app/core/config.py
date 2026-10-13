@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     ca_break_threshold_angstrom: float = 4.5
     log_level: str = "INFO"
     app_version: str = Field(default=__version__)
+    register_builtins: bool = True
 
     @field_validator("max_upload_bytes", "max_atom_count", "max_sequence_length", "max_heavy_atoms")
     @classmethod
