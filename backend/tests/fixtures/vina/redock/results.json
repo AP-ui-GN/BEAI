@@ -1,0 +1,126 @@
+{
+  "vina_version": "AutoDock Vina v1.2.5",
+  "exhaustiveness": 8,
+  "num_modes": 1,
+  "seed": 1,
+  "box_angstrom": 20.0,
+  "success_rmsd_angstrom": 2.0,
+  "rows": [
+    {
+      "split": "tuning",
+      "pdb": "3PTB",
+      "ligand": "BEN",
+      "rmsd_angstrom": 0.38634036044964726,
+      "success": true,
+      "affinity_kcal_mol": -6.196,
+      "smiles": "NC(=N)c1ccccc1",
+      "center_angstrom": [
+        -1.7591111111111113,
+        14.461,
+        16.915777777777777
+      ]
+    },
+    {
+      "split": "tuning",
+      "pdb": "1STP",
+      "ligand": "BTN",
+      "rmsd_angstrom": 0.6946867472014318,
+      "success": true,
+      "affinity_kcal_mol": -7.04,
+      "smiles": "OC(=O)CCCC[C@@H]1SC[C@@H]2NC(=O)N[C@H]12",
+      "center_angstrom": [
+        11.117625,
+        1.6800625,
+        -10.7545625
+      ]
+    },
+    {
+      "split": "tuning",
+      "pdb": "1HSG",
+      "ligand": "MK1",
+      "rmsd_angstrom": 0.42136429418226423,
+      "success": true,
+      "affinity_kcal_mol": -11.567,
+      "smiles": "CC(C)(C)NC(=O)[C@@H]1CN(CCN1C[C@@H](O)C[C@@H](Cc2ccccc2)C(=O)N[C@@H]3[C@H](O)Cc4ccccc34)Cc5cccnc5",
+      "center_angstrom": [
+        13.072666666666667,
+        22.467355555555553,
+        5.557488888888889
+      ]
+    },
+    {
+      "split": "tuning",
+      "pdb": "1FKF",
+      "ligand": "FK5",
+      "rmsd_angstrom": 7.823345721495985,
+      "success": false,
+      "affinity_kcal_mol": -6.548,
+      "smiles": "CO[C@@H]1C[C@@H](CC[C@H]1O)/C=C(C)/[C@H]2OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@]4(O)O[C@H]([C@H](C[C@@H](C)C\\C(=C\\[C@@H](CC=C)C(=O)C[C@H](O)[C@H]2C)C)OC)[C@H](C[C@H]4C)OC",
+      "center_angstrom": [
+        22.286105263157893,
+        30.218719298245617,
+        23.686666666666667
+      ]
+    },
+    {
+      "split": "tuning",
+      "pdb": "2PK4",
+      "ligand": "ACA",
+      "error": "Meeko receptor preparation failed: matched with excess inter-residue bond(s): A:32"
+    },
+    {
+      "split": "held-out",
+      "pdb": "1AQ1",
+      "ligand": "STU",
+      "rmsd_angstrom": 0.3478932885966152,
+      "success": true,
+      "affinity_kcal_mol": -13.841,
+      "smiles": "CN[C@@H]1C[C@H]2O[C@@](C)([C@@H]1OC)n3c4ccccc4c5c6CNC(=O)c6c7c8ccccc8n2c7c35",
+      "center_angstrom": [
+        0.5166,
+        27.0616,
+        8.971828571428572
+      ]
+    },
+    {
+      "split": "held-out",
+      "pdb": "1TLP",
+      "ligand": "RDF",
+      "rmsd_angstrom": 8.278915104289972,
+      "success": false,
+      "affinity_kcal_mol": -8.39,
+      "smiles": "CC(C)C[C@H](N[P@@](O)(=O)O[C@@H]1O[C@@H](C)[C@H](O)[C@@H](O)[C@H]1O)C(=O)N[C@@H](Cc2c[nH]c3ccccc23)C(O)=O",
+      "center_angstrom": [
+        36.96345945945946,
+        39.25835135135135,
+        -5.1454324324324325
+      ]
+    },
+    {
+      "split": "held-out",
+      "pdb": "2GBP",
+      "ligand": "BGC",
+      "rmsd_angstrom": 0.19162198907988706,
+      "success": true,
+      "affinity_kcal_mol": -7.357,
+      "smiles": "OC[C@H]1O[C@@H](O)[C@H](O)[C@@H](O)[C@@H]1O",
+      "center_angstrom": [
+        37.42883333333334,
+        30.596083333333336,
+        49.61083333333334
+      ]
+    },
+    {
+      "split": "held-out",
+      "pdb": "4DFR",
+      "ligand": "MTX",
+      "error": "Meeko receptor preparation failed: matched with excess inter-residue bond(s): B:131"
+    },
+    {
+      "split": "held-out",
+      "pdb": "1DWD",
+      "ligand": "MID",
+      "error": "Meeko receptor preparation failed: CGLN       heavy_miss=9 heavy_excess=0 H_excess=[] bond_miss=set() bond_excess=set()"
+    }
+  ]
+}

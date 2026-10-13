@@ -22,7 +22,7 @@ API: `http://127.0.0.1:8731`. App: `http://127.0.0.1:8732`. Alembic head is stil
 - The workflow docking step does not launch Vina even when Vina is installed. It skips with that reason.
 - Simulation checkpoint resume is not implemented.
 - NVE relative drift of 0.02 was not stable. Same-seed OpenMM energy missed 1.0 kJ/mol on one run (1.6878).
-- fpocket is absent. The Milestone 4 5–10 complex RMSD table was not run.
+- fpocket is absent. The Milestone 4 redocking table is in `docs/SCIENTIFIC_VALIDATION.md` (tuning 3/5, held-out 2/5, three preparation failures with no RMSD).
 - Open Targets, DailyMed, and Europe PMC were not built.
 - Playwright was not re-run.
 

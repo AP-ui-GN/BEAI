@@ -1,5 +1,6 @@
 """Vina parser, a real short docking run, cancellation, and ranking."""
 
+import json
 import time
 from pathlib import Path
 
@@ -8,6 +9,7 @@ from fastapi.testclient import TestClient
 
 from backend.app.services.docking.parse import parse_vina_pdbqt
 from backend.app.services.docking.ranking import pareto_flags
+from backend.app.services.docking.redock import SUCCESS_RMSD_ANGSTROM, rmsd_of_saved_pose
 
 FIXTURES = Path(__file__).parent / "fixtures"
 VINA = FIXTURES / "vina" / "3ptb_ben_seed1.pdbqt"
@@ -109,6 +111,30 @@ def test_cancel_kills_a_stand_in_process(client: TestClient, monkeypatch: pytest
     assert cancelled.status_code == 200
     job = _wait(client, created.json()["id"])
     assert job["status"] == "cancelled", job
+
+
+def test_redock_table_is_recomputed_from_saved_vina_poses() -> None:
+    """RMSD in results.json is recalculated from the stored Vina files. Vina is not launched."""
+
+    root = FIXTURES / "vina" / "redock"
+    payload = json.loads((root / "results.json").read_text(encoding="utf-8"))
+    assert "1.2.5" in payload["vina_version"]
+    assert payload["success_rmsd_angstrom"] == SUCCESS_RMSD_ANGSTROM
+    assert len(payload["rows"]) == 10
+    for row in payload["rows"]:
+        pose_path = root / f"{row['pdb']}_{row['ligand']}.pdbqt"
+        if "error" in row:
+            assert "rmsd_angstrom" not in row
+            assert not pose_path.is_file()
+            continue
+        text = pose_path.read_text(encoding="utf-8")
+        parsed = parse_vina_pdbqt(text)
+        assert parsed[0]["affinity_kcal_mol"] == row["affinity_kcal_mol"]
+        pdb_text = (FIXTURES / "pockets" / f"{row['pdb']}.pdb").read_text(encoding="utf-8", errors="replace")
+        ccd_text = (root / "ccd" / f"{row['ligand']}.cif").read_text(encoding="utf-8", errors="replace")
+        rmsd = rmsd_of_saved_pose(pdb_text, row["ligand"], ccd_text, text)
+        assert rmsd == pytest.approx(row["rmsd_angstrom"], abs=1e-9)
+        assert row["success"] is (rmsd <= SUCCESS_RMSD_ANGSTROM)
 
 
 def test_pareto_flags_match_a_hand_worked_table() -> None:

@@ -1,5 +1,12 @@
 # Development log
 
+## 2026-10-13 — Milestone 4 redocking RMSD table
+
+- AutoDock Vina v1.2.5 (`autodock-vina` 1.2.5-2build1). Command: `.venv/bin/python -m backend.app.services.docking.redock`.
+- Ten complexes, the pocket-benchmark split, exhaustiveness 8, seed 1, one mode, 20 Å box. Heavy-atom RMSD from RDKit `CalcRMS` on the saved poses.
+- Tuning success 3/5. Held-out success 2/5. 1FKF RMSD 7.823345721495985 Å. 1TLP RMSD 8.278915104289972 Å. 2PK4, 4DFR, and 1DWD failed Meeko receptor preparation and have no RMSD.
+- The pose files are under `backend/tests/fixtures/vina/redock/`. The test recomputes RMSD from those files and does not launch Vina.
+
 ## 2026-10-11 — Kickoff audit and plan
 
 No application code, dependency, dataset, or git history change. Rules and slash commands were already committed as `c4a3a7b` before this inspection. This entry covers the inspection commands and their results.

@@ -79,11 +79,29 @@ Descriptors are named by their RDKit function. Crippen logP is an estimate. No d
 
 | Check | Dataset | Metric | Acceptance | Result |
 | --- | --- | --- | --- | --- |
-| Redock | 3PTB / BEN, Vina 1.2.5, exhaustiveness 4, seed 1, 20 Å box on the crystal ligand centroid | docking score from the real PDBQT | parser scores equal the REMARK lines | passed 2026-10-13. Captured file `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt` modes −6.073, −5.062, −4.839 kcal/mol. A second seed-1 run differed by 0.006 kcal/mol. Acceptance window for that spread is 0.05 kcal/mol. A 5–10 complex RMSD table was not finished in this session |
+| Redock | 3PTB / BEN, Vina 1.2.5, exhaustiveness 4, seed 1, 20 Å box on the crystal ligand centroid | docking score from the real PDBQT | parser scores equal the REMARK lines | passed 2026-10-13. Captured file `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt` modes −6.073, −5.062, −4.839 kcal/mol. A second seed-1 run differed by 0.006 kcal/mol. Acceptance window for that spread is 0.05 kcal/mol |
+| Redock RMSD | 10 ligand-bound RCSB complexes already split for the pocket benchmark. Vina 1.2.5, exhaustiveness 8, seed 1, 1 mode, 20 Å box on the crystal ligand heavy-atom centroid | heavy-atom RMSD to the crystal pose, symmetry handled by RDKit `CalcRMS`, success at or below 2.0 Å | record every complex, including failures | run 2026-10-13. Tuning success 3/5. Held-out success 2/5. Table below |
 | Score versus activity | one target, one ChEMBL standard type and unit | rank correlation with a bootstrap interval | report the number even if it is weak | not run |
 | Seeds | same inputs | score reproduction | same seed within a tolerance written down before the run; spread reported | not run |
 
 A docking score is not an affinity. Parser tests use a Vina output file captured from a real run, not a hand-typed score.
+
+Redocking RMSD, command `.venv/bin/python -m backend.app.services.docking.redock` on 2026-10-13. AutoDock Vina v1.2.5. The split is the pocket-detector split and was not changed after these distances. The ligand is the largest residue of the named type in the file. Bond orders come from the CACTVS canonical SMILES in the RCSB chemical-component file downloaded the same day from `https://files.rcsb.org/ligands/download/{ID}.cif`. Meeko wrote the ligand PDBQT from those crystal coordinates plus hydrogens. The receptor dropped waters and that residue name, then `mk_prepare_receptor.py`. RDKit `CalcRMS` compared heavy atoms in the crystal frame and accounted for symmetry. It did not superimpose the pose onto the crystal ligand. `AssignBondOrdersFromTemplate` warned "More than one matching pattern found - picking one" on complexes that produced a pose. Poses are in `backend/tests/fixtures/vina/redock/`. A preparation failure has no pose and no RMSD.
+
+| Split | PDB | Ligand | Heavy-atom RMSD (Å) | Success at 2.0 Å | Vina score (kcal/mol) |
+| --- | --- | --- | --- | --- | --- |
+| tuning | 3PTB | BEN | 0.38634036044964726 | yes | -6.196 |
+| tuning | 1STP | BTN | 0.6946867472014318 | yes | -7.04 |
+| tuning | 1HSG | MK1 | 0.42136429418226423 | yes | -11.567 |
+| tuning | 1FKF | FK5 | 7.823345721495985 | no | -6.548 |
+| tuning | 2PK4 | ACA | not computed | no | not computed |
+| held-out | 1AQ1 | STU | 0.3478932885966152 | yes | -13.841 |
+| held-out | 1TLP | RDF | 8.278915104289972 | no | -8.39 |
+| held-out | 2GBP | BGC | 0.19162198907988706 | yes | -7.357 |
+| held-out | 4DFR | MTX | not computed | no | not computed |
+| held-out | 1DWD | MID | not computed | no | not computed |
+
+2PK4 failed in Meeko receptor preparation: `matched with excess inter-residue bond(s): A:32`. 4DFR failed the same way: `matched with excess inter-residue bond(s): B:131`. 1DWD failed with `CGLN       heavy_miss=9 heavy_excess=0 H_excess=[] bond_miss=set() bond_excess=set()`. Those three have no RMSD. 1FKF and 1TLP docked and missed 2.0 Å. The Vina score column is a docking score, not an affinity. Tuning success 3/5. Held-out success 2/5.
 
 ## Safety evidence (Milestone 5)
 
