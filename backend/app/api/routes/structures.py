@@ -94,6 +94,21 @@ def get_structure_by_id(
     return _to_response(get_structure(session, structure_id))
 
 
+@router.post("/{structure_id}/pockets", status_code=202, response_model=JobResponse)
+def detect_structure_pockets(
+    structure_id: str,
+    request: Request,
+    session: Session = Depends(get_session),
+) -> JobResponse:
+    get_structure(session, structure_id)
+    job = get_runner(request).submit(
+        "pocket_detection",
+        {"structure_id": structure_id},
+        structure_id=structure_id,
+    )
+    return to_job_response(job)
+
+
 @router.get("/{structure_id}/residues", response_model=ResidueListResponse)
 def list_residues(
     structure_id: str,

@@ -61,9 +61,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI):
         from backend.app.jobs.runner import JobRunner
         from backend.app.services.structure.compare import run_comparison_job
+        from backend.app.services.structure.pocket_job import run_pocket_job
 
         runner = JobRunner(app.state.session_factory, app.state.engine, app.state.settings)
         runner.register("structure_comparison", run_comparison_job)
+        runner.register("pocket_detection", run_pocket_job)
         app.state.jobs = runner
         runner.start()
         try:

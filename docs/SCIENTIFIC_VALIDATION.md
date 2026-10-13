@@ -40,16 +40,26 @@ SASA plan: Shrake-Rupley, probe radius 1.4 Å, radii set named in the method rec
 
 ## Pocket detector (Milestone 2)
 
-Label in the UI: "baseline geometric heuristic, unvalidated until benchmarked."
+Run on 2026-10-13 with the frozen parameters in `backend/app/services/structure/pockets.py`: grid 1.0 Å, protein radius 2.5 Å, shell 5.0 Å, 8 scan steps, at least 5 of 7 LigSite-style directions, clusters of at least 8 voxels, lining distance 5.0 Å. The first settings (protein radius 1.7 Å, 4 directions) left the protein core unfilled on the tuning set, so those two values were changed using only the tuning IDs. Held-out IDs were not used for that change.
 
-Plan, not a result:
+Success was pre-registered as a top-3 pocket centroid within 4.0 Å of the ligand heavy-atom centroid. The ligand is the largest non-buffer HET residue. Recovery is the fraction of polymer residues within 4.0 Å of that ligand that also line the closest top-3 pocket. The narrow claim is treated as met on the held-out set only because 3 of 5 succeeded. That is not a general binding-site validation.
 
-- Choose 8 to 10 diverse, non-redundant ligand-bound RCSB entries.
-- Write the IDs here and split them into a tuning set and a held-out test set before any parameter change.
-- Do not tune on the test set.
-- Remove the ligand, run detection, and record whether any of the top 3 pockets lies within a pre-registered distance of the ligand centre, plus the fraction of ligand-contacting residues recovered.
-- Proposed distance to pre-register in the Milestone 2 chat before runs: 4 Å. Change it there if you want a different cutoff. It is not a measured result.
-- Write failures as well as successes. If the benchmark is not run, the UI stays "unvalidated."
+Files were downloaded from `https://files.rcsb.org/download/{ID}.pdb` on 2026-10-13. Checksums are in `backend/tests/test_pockets.py`.
+
+| Split | PDB | Ligand | Distance (Å) | Success | Recovery |
+| --- | --- | --- | --- | --- | --- |
+| tuning | 3PTB | BEN | 0.565 | yes | 1.000 |
+| tuning | 1STP | BTN | 2.245 | yes | 0.750 |
+| tuning | 1HSG | MK1 | 0.675 | yes | 1.000 |
+| tuning | 1FKF | FK5 | 5.460 | no | 0.643 |
+| tuning | 2PK4 | ACA | 12.835 | no | 0.000 |
+| held-out | 1AQ1 | STU | 2.111 | yes | 1.000 |
+| held-out | 1TLP | RDF | 4.595 | no | 0.933 |
+| held-out | 2GBP | BGC | 2.878 | yes | 1.000 |
+| held-out | 4DFR | MTX | 5.388 | no | 0.938 |
+| held-out | 1DWD | MID | 2.892 | yes | 0.722 |
+
+Tuning success 3/5. Held-out success 3/5. Failures are 1FKF, 2PK4, 1TLP, and 4DFR. fpocket was not on PATH, so it did not contribute.
 
 ## Compounds (Milestone 3)
 
