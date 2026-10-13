@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class StructureResponse(BaseModel):
@@ -17,6 +17,15 @@ class StructureResponse(BaseModel):
 
 class StructureListResponse(BaseModel):
     structures: list[StructureResponse]
+
+
+class StructureCompareRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    structure_id: str
+    chain_id: str
+    other_structure_id: str
+    other_chain_id: str
 
 
 class ResidueRow(BaseModel):

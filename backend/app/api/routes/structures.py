@@ -4,11 +4,20 @@ from fastapi import APIRouter, Depends, File, Query, Request, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
+from backend.app.api.routes.jobs import get_runner, to_job_response
 from backend.app.core.config import Settings
+from backend.app.core.errors import InvalidInput
 from backend.app.core.timeutil import utc_iso
 from backend.app.db.models import Structure
 from backend.app.db.session import get_session
-from backend.app.schemas.structure import ResidueListResponse, ResidueRow, StructureListResponse, StructureResponse
+from backend.app.schemas.job import JobResponse
+from backend.app.schemas.structure import (
+    ResidueListResponse,
+    ResidueRow,
+    StructureCompareRequest,
+    StructureListResponse,
+    StructureResponse,
+)
 from backend.app.services.structure.deep import residue_table
 from backend.app.services.structure.ingest import (
     get_structure,
@@ -46,6 +55,35 @@ async def create_structure(
 @router.get("", response_model=StructureListResponse)
 def get_structures(session: Session = Depends(get_session)) -> StructureListResponse:
     return StructureListResponse(structures=[_to_response(row) for row in list_structures(session)])
+
+
+@router.post("/compare", status_code=202, response_model=JobResponse)
+def compare_structures(
+    body: StructureCompareRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+) -> JobResponse:
+    reference = get_structure(session, body.structure_id)
+    mobile = get_structure(session, body.other_structure_id)
+    _require_chain(reference, body.chain_id)
+    _require_chain(mobile, body.other_chain_id)
+    job = get_runner(request).submit(
+        "structure_comparison",
+        {
+            "structure_id": body.structure_id,
+            "chain_id": body.chain_id,
+            "other_structure_id": body.other_structure_id,
+            "other_chain_id": body.other_chain_id,
+        },
+        structure_id=body.structure_id,
+    )
+    return to_job_response(job)
+
+
+def _require_chain(row: Structure, chain_id: str) -> None:
+    chains = list((row.metadata_json or {}).get("chain_ids") or [])
+    if chain_id not in chains:
+        raise InvalidInput(f"Chain {chain_id} is not in this structure.")
 
 
 @router.get("/{structure_id}", response_model=StructureResponse)
