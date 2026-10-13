@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Index, Integer, String
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -24,6 +24,26 @@ class Structure(Base):
     size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     metadata_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+
+
+class Job(Base):
+    """In-process work item. Progress is null unless the handler can measure it."""
+
+    __tablename__ = "jobs"
+    __table_args__ = (Index("ix_jobs_created_at", "created_at"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    kind: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    progress: Mapped[float | None] = mapped_column(Float, nullable=True)
+    cancel_requested: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    error_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    payload_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    analysis_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    structure_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
 
 
 class Analysis(Base):

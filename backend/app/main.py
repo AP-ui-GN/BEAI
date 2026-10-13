@@ -1,6 +1,7 @@
 """FastAPI application. Binds to loopback by default and does not auto-migrate."""
 
 import uuid
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +10,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from backend.app.api.errors import register_exception_handlers
 from backend.app.api.routes.analyses import router as analyses_router
 from backend.app.api.routes.health import router as health_router
+from backend.app.api.routes.jobs import router as jobs_router
 from backend.app.api.routes.structures import router as structures_router
 from backend.app.core.config import Settings
 from backend.app.core.logging import configure_logging, request_id_var
@@ -53,6 +55,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     active = settings or Settings()
     configure_logging(active.log_level)
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        from backend.app.jobs.runner import JobRunner
+
+        runner = JobRunner(app.state.session_factory, app.state.engine, app.state.settings)
+        app.state.jobs = runner
+        runner.start()
+        try:
+            yield
+        finally:
+            runner.shutdown()
     storage = active.resolved_storage_dir()
     storage.mkdir(parents=True, exist_ok=True)
     database_url = active.resolved_database_url()
@@ -63,7 +77,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
             Path(db_path).parent.mkdir(parents=True, exist_ok=True)
 
-    app = FastAPI(title="BEAI", version=active.app_version)
+    app = FastAPI(title="BEAI", version=active.app_version, lifespan=lifespan)
     app.state.settings = active
     app.state.engine = make_engine(database_url)
     app.state.session_factory = session_factory(app.state.engine)
@@ -79,6 +93,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health_router)
     app.include_router(structures_router)
     app.include_router(analyses_router)
+    app.include_router(jobs_router)
     return app
 
 

@@ -12,6 +12,7 @@ def make_engine(url: str) -> Engine:
     connect_args: dict[str, object] = {}
     if url.startswith("sqlite"):
         connect_args["check_same_thread"] = False
+        connect_args["timeout"] = 30
     engine = create_engine(url, connect_args=connect_args)
     if url.startswith("sqlite"):
 
@@ -19,6 +20,7 @@ def make_engine(url: str) -> Engine:
         def _enable_foreign_keys(dbapi_connection: object, _connection_record: object) -> None:
             cursor = dbapi_connection.cursor()  # type: ignore[attr-defined]
             cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.execute("PRAGMA journal_mode=WAL")
             cursor.close()
 
     return engine

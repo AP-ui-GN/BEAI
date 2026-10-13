@@ -1,5 +1,6 @@
-"""Health reports live probes. Missing optional tools are unavailable, not guessed."""
+"""Health reports live probes. A missing optional tool is unavailable, not guessed."""
 
+import shutil
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -17,8 +18,7 @@ def test_health_returns_real_status(client: TestClient) -> None:
     assert body["version"] == "0.1.0"
     assert body["status"] == "ok"
     assert body["database"]["connected"] is True
-    assert body["database"]["revision"] == "0001_initial"
-    assert body["database"]["head"] == "0001_initial"
+    assert body["database"]["revision"] == body["database"]["head"] == "0002_jobs"
     assert body["database"]["reason"] is None
     assert body["storage"]["writable"] is True
     assert body["storage"]["reason"] is None
@@ -26,20 +26,30 @@ def test_health_returns_real_status(client: TestClient) -> None:
     assert response.headers["x-request-id"]
 
 
-def test_optional_tools_are_reported_unavailable(client: TestClient) -> None:
+def test_optional_tools_match_this_machine(client: TestClient) -> None:
     capabilities = client.get("/api/health").json()["capabilities"]
     assert set(capabilities) == set(CAPABILITIES)
-    for name in CAPABILITIES:
-        status = capabilities[name]
-        assert status["available"] is False
-        assert status["version"] is None
-        assert isinstance(status["reason"], str) and status["reason"]
+    for status in capabilities.values():
+        assert set(status) == {"available", "version", "reason"}
+        if status["available"]:
+            assert status["reason"] is None
+            assert status["version"]
+        else:
+            assert status["version"] is None
+            assert isinstance(status["reason"], str) and status["reason"]
+    assert capabilities["rdkit"]["available"] is False
     assert "not installed" in capabilities["rdkit"]["reason"]
-    assert "not on PATH" in capabilities["mkdssp"]["reason"]
+    assert capabilities["vina"]["available"] is False
     assert "not on PATH" in capabilities["vina"]["reason"]
-    assert "not installed" in capabilities["openmm"]["reason"]
-    assert "not installed" in capabilities["pytorch"]["reason"]
+    assert capabilities["openmm"]["available"] is False
+    assert capabilities["pytorch"]["available"] is False
     assert "nvidia-smi" in capabilities["gpu"]["reason"]
+    mkdssp_present = shutil.which("mkdssp") is not None or shutil.which("dssp") is not None
+    assert capabilities["mkdssp"]["available"] is mkdssp_present
+    if mkdssp_present:
+        assert "4.2.2" in str(capabilities["mkdssp"]["version"])
+    else:
+        assert "not on PATH" in capabilities["mkdssp"]["reason"]
 
 
 def test_unwritable_storage_is_degraded(tmp_path: Path) -> None:
