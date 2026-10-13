@@ -83,6 +83,55 @@ def test_resume_skips_a_succeeded_step(client: TestClient, monkeypatch: pytest.M
     assert calls["n"] == 2
 
 
+def test_installed_vina_stores_the_real_docking_output(client: TestClient) -> None:
+    smiles = ""
+    for line in open("backend/tests/fixtures/vina/BEN.cif", encoding="utf-8", errors="replace"):
+        if "SMILES_CANONICAL" in line and "CACTVS" in line:
+            smiles = line.split('"')[1]
+            break
+    assert smiles
+    payload = open("backend/tests/fixtures/pockets/3PTB.pdb", "rb").read()
+    uploaded = client.post("/api/structures", files={"file": ("3PTB.pdb", payload, "chemical/x-pdb")})
+    assert uploaded.status_code == 201, uploaded.text
+    created = client.post(
+        "/api/workflows",
+        json={
+            "name": "dock-benzamidine",
+            "steps": [
+                {
+                    "id": "dock",
+                    "service": "docking",
+                    "parameters": {
+                        "structure_id": uploaded.json()["id"],
+                        "ligand_smiles": smiles,
+                        "ligand_resname": "BEN",
+                        "exhaustiveness": 4,
+                        "num_modes": 1,
+                        "seed": 1,
+                    },
+                },
+                {
+                    "id": "after",
+                    "service": "compound_descriptors",
+                    "parameters": {"smiles": "CCO"},
+                    "depends_on": ["dock"],
+                },
+            ],
+        },
+    )
+    assert created.status_code == 201, created.text
+    steps = created.json()["result"]["details"]["steps"]
+    assert steps["dock"]["status"] == "succeeded", steps["dock"]
+    output = steps["dock"]["output"]
+    from backend.app.services.docking.parse import parse_vina_pdbqt
+
+    parsed = parse_vina_pdbqt(output["output_pdbqt"])
+    assert output["modes"][0]["affinity_kcal_mol"] == parsed[0]["affinity_kcal_mol"]
+    assert "1.2.5" in str(output["vina_version"])
+    assert steps["after"]["status"] == "succeeded"
+    assert steps["after"]["output"]["canonical_smiles"] == "CCO"
+
+
 def test_missing_vina_skips_docking_and_dependents(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("backend.app.services.workflows.execute.shutil.which", lambda _name: None)
     created = client.post(

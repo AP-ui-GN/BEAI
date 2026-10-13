@@ -5,7 +5,7 @@ Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 ## Session 6F
 
 - A workflow does not draw a scientific conclusion. Step outputs keep their own origins.
-- The docking workflow step does not launch Vina. If Vina is missing, the step is skipped and so are its dependents. If Vina is present, the step is still skipped and says the runner does not launch it.
+- If Vina is missing, the docking workflow step is skipped and so are its dependents. If Vina is installed, the step launches Vina and stores the parsed output.
 - LLM summarize is off unless `BEAI_LLM_ENABLED` is set. There is no external model call. The citation check only accepts bracketed ids from the retrieved set.
 - Playwright was not re-run.
 

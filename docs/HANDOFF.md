@@ -1,6 +1,6 @@
 # Handoff
 
-Date: 2026-10-13. Session 6F workflow orchestration is on `m6f-workflows`, branched from `m6e-generation`. Milestone 6 sessions 6A–6F are all on their own branches.
+Date: 2026-10-13. Plan-gap work is on `plan-gaps`, branched from `m6f-workflows`.
 
 ## Current state
 
@@ -15,15 +15,14 @@ API: `http://127.0.0.1:8731`. App: `http://127.0.0.1:8732`. Alembic head is stil
 - A workflow on the synthetic peptide plus ethanol returned a real polymer-residue measurement and canonical SMILES `CCO`.
 - Resume reran only the failed step.
 - With Vina hidden, docking and the dependent step were skipped with a reason.
+- With Vina installed, a workflow docking step stored the affinity parsed from its PDBQT.
+- Simulation resume from an OpenMM checkpoint matched a continuous run within 1e-5 Å. A finished checkpoint stored no energies.
 - LLM summarize is 503 by default. With the flag on, `[PMID:9]` was rejected when only `PMID:1` was retrieved.
 
 ## Broken or incomplete
 
-- The workflow docking step does not launch Vina even when Vina is installed. It skips with that reason.
-- Simulation dynamics writes an OpenMM checkpoint. `resume_from` continues that job. A finished checkpoint is refused and stores no energies.
-- NVE relative drift of 0.02 was not stable. Same-seed OpenMM energy missed 1.0 kJ/mol on one run (1.6878).
-- fpocket is absent. The Milestone 4 redocking table is in `docs/SCIENTIFIC_VALIDATION.md` (tuning 3/5, held-out 2/5, three preparation failures with no RMSD).
-- Open Targets, DailyMed (openFDA fallback), and Europe PMC search are retrieved sources. Literature and Open Targets rows stay unclassified.
+- NVE relative drift of 0.02 was not stable. Same-seed OpenMM energy missed 1.0 kJ/mol on one run (1.6878). Those recorded numbers were not changed.
+- fpocket is absent. There is no distro package to wrap.
 - Playwright was not re-run.
 
 ## Decisions

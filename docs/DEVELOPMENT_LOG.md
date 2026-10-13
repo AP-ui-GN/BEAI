@@ -1,5 +1,10 @@
 # Development log
 
+## 2026-10-13 — Workflow docking launches Vina
+
+- When `vina` is on PATH, a workflow docking step calls the same Vina runner as `POST /api/docking` and stores the parsed modes plus the PDBQT text. A 3PTB / benzamidine workflow step was checked against the REMARK line in that output.
+- When Vina is hidden, the step is still skipped and dependent steps are skipped.
+
 ## 2026-10-13 — Simulation checkpoint resume
 
 - Dynamics jobs write an OpenMM checkpoint and the prepared PDB. Resume reloads that PDB. A second PDBFixer call is not used, because two calls on 1UBQ did not reproduce coordinates.

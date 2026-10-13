@@ -13,7 +13,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import Settings
-from backend.app.core.errors import CapabilityUnavailable, InvalidInput
+from backend.app.core.errors import CapabilityUnavailable, InvalidInput, NotFound
 from backend.app.services.compounds.chemistry import parse_molecule
 from backend.app.services.structure.analyses import run_structure_overview
 
@@ -99,7 +99,19 @@ def _run_step(service: str, parameters: dict[str, Any], session: Session, settin
     if service == "docking":
         if shutil.which("vina") is None:
             raise CapabilityUnavailable("Vina is not on PATH.")
-        raise CapabilityUnavailable("This workflow runner does not launch Vina. The docking step was skipped.")
+        from backend.app.services.docking.job import dock_payload
+
+        try:
+            docked = dock_payload(session, settings, parameters, None)
+        except NotFound as exc:
+            raise InvalidInput(exc.message) from exc
+        return {
+            "modes": docked["modes"],
+            "output_pdbqt": docked["output_pdbqt"],
+            "vina_version": docked["vina_version"],
+            "seed": docked["seed"],
+            "parameters": docked["parameters"],
+        }
     raise InvalidInput(f"Unknown workflow service: {service}.")
 
 

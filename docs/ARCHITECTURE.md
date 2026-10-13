@@ -42,7 +42,7 @@ The CPU torch wheel was installed with:
 
 ## Workflows (session 6F)
 
-`POST /api/workflows` accepts a JSON definition. Each step names `structure_overview`, `compound_descriptors`, or `docking`. A skipped step records a reason, and steps that depend on it are skipped. `resume_from` is the id of an earlier workflow analysis. `BEAI_LLM_ENABLED` defaults to false.
+`POST /api/workflows` accepts a JSON definition. Each step names `structure_overview`, `compound_descriptors`, or `docking`. A docking step launches AutoDock Vina when it is on PATH and stores the parsed output. When Vina is absent the step is skipped, and steps that depend on it are skipped. `resume_from` is the id of an earlier workflow analysis. `BEAI_LLM_ENABLED` defaults to false.
 
 ## Simulation (session 6D)
 
