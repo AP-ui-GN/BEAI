@@ -1,6 +1,6 @@
 # BEAI
 
-BEAI is local research software for protein coordinate files and sequences. It uploads a PDB or mmCIF file, computes a structure overview (including DSSP or P-SEA, SASA, contacts, and backbone angles), shows it in a 3Dmol.js viewer, stores the analysis in SQLite, and downloads HTML, Markdown, and JSON reports. Sequences can be pasted or imported from UniProt. Pockets and chain comparison run as jobs.
+BEAI is local research software for protein coordinate files, sequences, compounds, docking, and sourced safety evidence. It uploads a PDB or mmCIF file, computes a structure overview (including DSSP or P-SEA, SASA, contacts, and backbone angles), shows it in a 3Dmol.js viewer, stores the analysis in SQLite, and downloads HTML, Markdown, and JSON reports. Sequences can be pasted or imported from UniProt. Pockets, chain comparison, and docking run as jobs. The Model Laboratory lists registered models and the live RAM report. No weights are loaded at startup.
 
 It is not a clinical tool and does not give medical advice.
 

@@ -6,6 +6,7 @@ import { Dashboard } from "@/pages/Dashboard"
 import { CompoundExplorer } from "@/pages/CompoundExplorer"
 import { DrugDiscovery } from "@/pages/DrugDiscovery"
 import { DrugSafety } from "@/pages/DrugSafety"
+import { ModelLaboratory } from "@/pages/ModelLaboratory"
 import { PlannedRoute } from "@/pages/Planned"
 import { ProteinExplorer } from "@/pages/ProteinExplorer"
 import { ResearchLibrary } from "@/pages/ResearchLibrary"
@@ -34,17 +35,7 @@ export default function App() {
               }
             />
             <Route path="library" element={<ResearchLibrary />} />
-            <Route
-              path="models"
-              element={
-                <PlannedRoute
-                  title="Model Laboratory"
-                  summary="Model registry and benchmarks are planned. No weights are loaded, and this page does not start a training run."
-                  capabilityKey="pytorch"
-                  toolName="PyTorch"
-                />
-              }
-            />
+            <Route path="models" element={<ModelLaboratory />} />
           </Route>
         </Routes>
       </BrowserRouter>

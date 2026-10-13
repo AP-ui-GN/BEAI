@@ -1,6 +1,16 @@
 # BEAI architecture
 
-Date: 2026-10-13. Milestone 2 is implemented on `m2-protein`. The "Milestone 1 as built" section is unchanged history. The "Milestone 2 as built" section is what the code does now.
+Date: 2026-10-13. Session 6A is on `m6a-registry`. Earlier milestone sections below are history.
+
+## Model registry (session 6A)
+
+`registered_models` (Alembic `0006_models`) stores name, version, task, source URL, licence, dependencies, declared hardware, input and output formats, an optional benchmark object, and known limitations. `GET /api/models` returns those rows plus a live hardware report. `GET /api/models/hardware` reports RAM from psutil and reports CUDA or MPS only after PyTorch imports and answers. Load and unload are `POST /api/models/{id}/load` and `POST /api/models/{id}/unload`. The process-local runtime starts empty. `create_app` does not call a loader.
+
+A missing Python or executable dependency sets status `disabled` and load returns HTTP 503. A declared RAM or device requirement the machine does not meet sets status `incompatible` and load returns HTTP 422. The `registry_only` loader never executes a weight file. Training status on each row is the list of `model_training` jobs whose payload names that model id. An empty list is the empty state.
+
+| Package | Version | Licence metadata | Notes |
+| --- | --- | --- | --- |
+| psutil | 7.2.2 | BSD-3-Clause | RAM report. Wheel about 155 kB. Installed package directory about 900 kB. Homepage https://github.com/giampaolo/psutil |
 
 ## Evidence categories (Milestone 5)
 

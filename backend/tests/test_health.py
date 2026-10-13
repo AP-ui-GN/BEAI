@@ -19,7 +19,7 @@ def test_health_returns_real_status(client: TestClient) -> None:
     assert body["version"] == "0.1.0"
     assert body["status"] == "ok"
     assert body["database"]["connected"] is True
-    assert body["database"]["revision"] == body["database"]["head"] == "0005_safety"
+    assert body["database"]["revision"] == body["database"]["head"] == "0006_models"
     assert body["database"]["reason"] is None
     assert body["storage"]["writable"] is True
     assert body["storage"]["reason"] is None

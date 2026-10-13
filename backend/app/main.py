@@ -13,6 +13,7 @@ from backend.app.api.routes.compounds import router as compounds_router
 from backend.app.api.routes.docking import router as docking_router
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.jobs import router as jobs_router
+from backend.app.api.routes.models import router as models_router
 from backend.app.api.routes.safety import router as safety_router
 from backend.app.api.routes.sequences import router as sequences_router
 from backend.app.api.routes.structures import router as structures_router
@@ -80,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             http = getattr(app.state, "http", None)
             if http is not None:
                 http.close()
+
     storage = active.resolved_storage_dir()
     storage.mkdir(parents=True, exist_ok=True)
     database_url = active.resolved_database_url()
@@ -99,6 +101,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     cache_dir = active.resolved_cache_dir()
     cache_dir.mkdir(parents=True, exist_ok=True)
     app.state.http = ExternalHttp(cache_dir)
+    from backend.app.services.models_registry.runtime import ModelRuntime
+
+    app.state.model_runtime = ModelRuntime()
     app.add_middleware(
         CORSMiddleware,
         allow_origins=active.cors_origin_list(),
@@ -116,6 +121,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(compounds_router)
     app.include_router(docking_router)
     app.include_router(safety_router)
+    app.include_router(models_router)
     return app
 
 

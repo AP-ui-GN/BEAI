@@ -22,6 +22,7 @@ dependencies = [
     "rdkit==2025.9.1",
     "meeko==0.8.0",
     "gemmi==0.7.5",
+    "psutil==7.2.2",
 ]
 
 [project.optional-dependencies]

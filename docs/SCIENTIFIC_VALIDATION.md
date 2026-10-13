@@ -93,7 +93,7 @@ Validation is provenance tests: label text stored verbatim, FAERS always observa
 
 ## Models and simulation (Milestone 6)
 
-No results.
+Session 6A added the registry only. No embedding, solubility, simulation, or generation result has been produced. Stored benchmark fields stay null until a later session runs the check and writes the number here.
 
 - Embeddings: on a small curated pair set, rank correlation between embedding cosine similarity and pairwise alignment identity, with a bootstrap interval. No functional or structural claim.
 - Solubility: public set such as ESOL, checksum and licence recorded, scaffold split saved with its seed, baseline beside any neural model, RMSE, MAE, and R-squared with bootstrap intervals.

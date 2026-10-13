@@ -1,40 +1,43 @@
 # Handoff
 
-Date: 2026-10-13. Milestone 5 safety evidence is on `m5-safety`, branched from `m4-docking`. Milestone 6 has not started. Docking still lacks a 5–10 complex RMSD table.
+Date: 2026-10-13. Session 6A model registry is on `m6a-registry`, branched from `m5-safety`. Sessions 6B–6F have not started.
 
 ## Current state
 
-Compound routes sanitize SMILES with RDKit 2025.09.1, store canonical SMILES and InChIKey, calculate named descriptors, draw an SVG, and compute Morgan Tanimoto similarity. PubChem and ChEMBL imports keep retrieved fields apart from calculated descriptors. Activities are grouped by target, standard type, and units. Protein features from Milestone 2 still run.
+`registered_models` is Alembic revision `0006_models`. `GET /api/models` lists registry rows and a psutil RAM report. CUDA and MPS are reported only when PyTorch is installed and answers; on this machine both say PyTorch is not installed, so they were not queried. Load and unload touch a process-local runtime. Startup does not call a loader. The only loader key is `registry_only`. It does not execute weights. The Model Laboratory at `/models` renders the API payload, including an empty list when nothing is registered.
 
-API: `http://127.0.0.1:8731`. App: `http://127.0.0.1:8732`. Alembic head is `0004_compounds`.
+API: `http://127.0.0.1:8731`. App: `http://127.0.0.1:8732`.
 
 ## Verified
 
-- `.venv/bin/python -m pytest` — 66 passed, 1 deselected (`network`), 0 failed.
-- `npm --prefix frontend test` — 7 passed, 0 failed.
+- `.venv/bin/python -m pytest` — 88 passed, 1 deselected (`network`), 0 failed.
+- `npm --prefix frontend test` — 9 passed, 0 failed.
 - `npm --prefix frontend run build` — completed.
-- Playwright was not re-run.
+- A registry row inserted before process start stayed unloaded, and the loader function was not called.
+- A model depending on a missing Python module returned HTTP 503 on load. `GET /api/health` stayed 200.
+- A declared minimum RAM above the machine total returned HTTP 422 and was not marked loaded.
 
 ## Broken or incomplete
 
-- No docking, safety retrieval, simulation, or models.
-- fpocket, Vina, OpenMM, and PyTorch are not installed.
-- ChEMBL activity import requests at most 100 rows.
-- The ChEMBL licence was not in the molecule JSON, so the record does not invent one.
-- Playwright was not re-run after Compound Explorer replaced the planned page.
+- No embedding, property, simulation, generation, or workflow code.
+- PyTorch, OpenMM, and fpocket are not installed. No weight file is in `models/`.
+- The Milestone 4 5–10 complex heavy-atom RMSD table was not run.
+- Open Targets, DailyMed, and Europe PMC were not built.
+- Playwright was not re-run.
 
 ## Decisions
 
-- RDKit 2025.9.1 from PyPI, about 73 MB, BSD-3-Clause. Under the 500 MB line.
-- Salts stay multi-fragment unless `keep_largest_fragment` is true.
-- Lipinski counts are property-filter observations, not a drug-likeness label.
+- psutil 7.2.2 (BSD-3-Clause, wheel about 155 kB) reports RAM. It is a direct dependency because the registry has to read the machine.
+- Hardware refusal is HTTP 422. A missing dependency is HTTP 503. Those are different failures.
+- `registry_only` may verify a sha256 under `models/` and still reports `weights_loaded: false`.
+- Training status is read from `model_training` job rows. Session 6A does not create those jobs itself.
 
 ## Next task
 
-Milestone 4, docking, from this branch. If Vina cannot be installed, docking endpoints return 503 and the rest of the suite stays green. Do not invent a pose.
+Session 6B, protein embeddings, from this branch. Read the ESM-2 8M model card (`facebook/esm2_t6_8M_UR50D`) for the licence and token limit before any download. Keep weights under gitignored `models/`. Plumbing tests use a stub. The real checkpoint test is opt-in. Do not load the model at startup.
 
 ## UI controls
 
-- Compound Explorer: SMILES submit, PubChem name import, compound list, depiction image, descriptor table with origin badges, compare the first two stored compounds, HTML report link.
-- Protein controls from Milestone 2 remain.
-- Drug Discovery, Drug Safety, Simulation Center, and Model Laboratory are still planned pages with no action buttons.
+- Model Laboratory: shows hardware bytes, CUDA/MPS reasons, and each registered model. Load is disabled when the API status is `disabled` or `incompatible`, with the reason visible. Unload is enabled only after a successful load. Empty registry copy is shown when the list is empty.
+- Protein, compound, discovery, and safety controls from earlier milestones remain.
+- Simulation Center is still a planned page.

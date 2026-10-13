@@ -87,6 +87,30 @@ class Job(Base):
     structure_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
 
 
+class RegisteredModel(Base):
+    """A model registry row. Weights are not stored in this table and are not loaded at startup."""
+
+    __tablename__ = "registered_models"
+    __table_args__ = (Index("ix_registered_models_name_version", "name", "version", unique=True),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    task: Mapped[str] = mapped_column(String(200), nullable=False)
+    source_url: Mapped[str] = mapped_column(String, nullable=False)
+    licence: Mapped[str] = mapped_column(String, nullable=False)
+    dependencies_json: Mapped[list] = mapped_column(JSON, nullable=False)
+    hardware_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    input_format: Mapped[str] = mapped_column(String, nullable=False)
+    output_format: Mapped[str] = mapped_column(String, nullable=False)
+    benchmark_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    known_limitations: Mapped[str] = mapped_column(String, nullable=False)
+    checksum_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    weights_relative: Mapped[str | None] = mapped_column(String, nullable=True)
+    loader_key: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class Analysis(Base):
     """One analysis run. Milestone 1 writes these from the request, not a job worker."""
 

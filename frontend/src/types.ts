@@ -125,3 +125,62 @@ export type StructureResponse = {
 export type StructureListResponse = {
   structures: StructureResponse[]
 }
+
+export type AcceleratorStatus = {
+  available: boolean
+  version: string | null
+  reason: string | null
+}
+
+export type HardwareReport = {
+  ram_total_bytes: number
+  ram_available_bytes: number
+  cuda: AcceleratorStatus
+  mps: AcceleratorStatus
+}
+
+export type RegisteredModel = {
+  id: string
+  name: string
+  version: string
+  task: string
+  source_url: string
+  licence: string
+  dependencies: Array<{
+    kind: string
+    name: string
+    available: boolean
+    version: string | null
+    reason: string | null
+  }>
+  hardware_requirements: {
+    min_ram_bytes: number
+    device: string
+  }
+  hardware_compatibility: {
+    compatible: boolean
+    reasons: string[]
+  }
+  input_format: string
+  output_format: string
+  benchmark: Record<string, unknown> | null
+  known_limitations: string
+  status: "disabled" | "incompatible" | "ready" | "loaded"
+  status_reason: string | null
+  loaded: boolean
+  weights_loaded: boolean
+  load_note: string | null
+  training_jobs: Array<{
+    id: string
+    status: string
+    progress: number | null
+    created_at: string
+  }>
+  created_at: string
+  card_markdown: string
+}
+
+export type ModelListResponse = {
+  hardware: HardwareReport
+  models: RegisteredModel[]
+}

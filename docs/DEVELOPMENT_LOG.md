@@ -144,6 +144,16 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
 - `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
 
+## 2026-10-13 — Milestone 6 session 6A, model registry
+
+Baseline before edits: `m5-safety` at `65d80c7`. `.venv/bin/python -m pytest` — **78 passed, 1 deselected (`network`), 0 failed**.
+
+- Added Alembic `0006_models` and `GET/POST /api/models`, `GET /api/models/hardware`, load, and unload. RAM is `psutil.virtual_memory`. CUDA and MPS are queried only if PyTorch imports.
+- psutil 7.2.2, wheel metadata BSD-3-Clause, wheel about 155 kB, package directory about 900 kB.
+- `.venv/bin/python -m pytest` — **88 passed, 1 deselected (`network`), 0 failed**.
+- `npm --prefix frontend test` — **9 passed, 0 failed**. `npm --prefix frontend run build` completed.
+- Startup with a pre-inserted registry row did not call the loader. A declared RAM requirement above the machine total was refused. A missing Python dependency returned HTTP 503 and `GET /api/health` stayed 200.
+
 ## 2026-10-13 — Milestone 5, therapeutic safety evidence
 
 - openFDA label and FAERS count responses, and a PubMed esearch/esummary pair, were saved from live calls on 2026-10-13 and used as mock bodies.

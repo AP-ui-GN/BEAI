@@ -1,6 +1,13 @@
 # Known limitations
 
-Date: 2026-10-13. Limits after Milestone 2. They are not scientific results.
+Date: 2026-10-13. Limits after session 6A. They are not scientific results.
+
+## Session 6A
+
+- No scientific model is registered and no weight file is shipped. The `registry_only` loader does not execute a weight file.
+- PyTorch and OpenMM are still not installed. CUDA and MPS are reported as not queried because PyTorch is absent. That is not a measurement of the GPU.
+- Training jobs are shown only when a `model_training` row exists. Session 6A does not train anything.
+- fpocket is still absent. The Milestone 4 5–10 complex heavy-atom RMSD table was not run. Open Targets, DailyMed, and Europe PMC were not built.
 
 ## Milestone 2
 
