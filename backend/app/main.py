@@ -10,6 +10,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from backend.app.api.errors import register_exception_handlers
 from backend.app.api.routes.analyses import router as analyses_router
 from backend.app.api.routes.compounds import router as compounds_router
+from backend.app.api.routes.docking import router as docking_router
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.jobs import router as jobs_router
 from backend.app.api.routes.sequences import router as sequences_router
@@ -61,12 +62,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         from backend.app.jobs.runner import JobRunner
+        from backend.app.services.docking.job import run_docking_job
         from backend.app.services.structure.compare import run_comparison_job
         from backend.app.services.structure.pocket_job import run_pocket_job
 
         runner = JobRunner(app.state.session_factory, app.state.engine, app.state.settings)
         runner.register("structure_comparison", run_comparison_job)
         runner.register("pocket_detection", run_pocket_job)
+        runner.register("docking", run_docking_job)
         app.state.jobs = runner
         runner.start()
         try:
@@ -110,6 +113,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(jobs_router)
     app.include_router(sequences_router)
     app.include_router(compounds_router)
+    app.include_router(docking_router)
     return app
 
 

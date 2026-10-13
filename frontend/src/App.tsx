@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Dashboard } from "@/pages/Dashboard"
 import { CompoundExplorer } from "@/pages/CompoundExplorer"
+import { DrugDiscovery } from "@/pages/DrugDiscovery"
 import { PlannedRoute } from "@/pages/Planned"
 import { ProteinExplorer } from "@/pages/ProteinExplorer"
 import { ResearchLibrary } from "@/pages/ResearchLibrary"
@@ -18,17 +19,7 @@ export default function App() {
             <Route path="proteins" element={<ProteinExplorer />} />
             <Route path="proteins/:structureId" element={<ProteinExplorer />} />
             <Route path="compounds" element={<CompoundExplorer />} />
-            <Route
-              path="discovery"
-              element={
-                <PlannedRoute
-                  title="Drug Discovery"
-                  summary="Docking is planned for a later milestone. BEAI will not invent a pose when Vina is absent."
-                  capabilityKey="vina"
-                  toolName="AutoDock Vina"
-                />
-              }
-            />
+            <Route path="discovery" element={<DrugDiscovery />} />
             <Route
               path="safety"
               element={

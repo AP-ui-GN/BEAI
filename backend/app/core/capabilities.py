@@ -91,6 +91,7 @@ def probe_all() -> dict[str, dict[str, Any]]:
         "mkdssp": probe_executable(["mkdssp", "dssp"], "mkdssp"),
         "fpocket": probe_executable(["fpocket"], "fpocket"),
         "vina": probe_executable(["vina"], "Vina"),
+        "meeko": probe_import("meeko", "Meeko"),
         "openmm": probe_import("openmm", "OpenMM"),
         "pytorch": probe_import("torch", "PyTorch"),
         "gpu": probe_gpu(),

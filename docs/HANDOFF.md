@@ -1,6 +1,6 @@
 # Handoff
 
-Date: 2026-10-13. Milestone 3 is implemented on `m3-compounds`, branched from `m2-protein`. Milestone 4 has not started.
+Date: 2026-10-13. Milestone 4 docking is on `m4-docking`, branched from `m3-compounds`. A full 5–10 complex redock RMSD table is not finished. Milestone 5 has not started.
 
 ## Current state
 

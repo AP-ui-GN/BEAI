@@ -137,3 +137,10 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - `.venv/bin/python -m pytest` — **66 passed, 1 deselected, 0 failed**.
 - `npm --prefix frontend test` — **7 passed, 0 failed**. `npm --prefix frontend run build` completed.
 - Aspirin, caffeine, and ethanol matched C9H8O4 / 180.16, C8H10N4O2 / 194.19, and C2H6O / 46.07 after rounding MolWt to 2 decimals.
+
+## 2026-10-13 — Milestone 4, docking
+
+- Ubuntu package `autodock-vina` 1.2.5. Meeko 0.8.0 (LGPL-2.1, about 9.2 MB) and gemmi 0.7.5 (MPL-2.0, about 6.9 MB). Meeko 0.6.1 does not support Python 3.12.
+- A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
+- `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
+- A 5–10 complex heavy-atom RMSD table was not run. That gap is in `docs/SCIENTIFIC_VALIDATION.md`. No pose was invented.

@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from backend.app.core.config import Settings
 from backend.app.main import create_app
 
-CAPABILITIES = ("rdkit", "biotite", "mkdssp", "fpocket", "vina", "openmm", "pytorch", "gpu")
+CAPABILITIES = ("rdkit", "biotite", "mkdssp", "fpocket", "vina", "meeko", "openmm", "pytorch", "gpu")
 
 
 def test_health_returns_real_status(client: TestClient) -> None:
@@ -48,8 +48,13 @@ def test_optional_tools_match_this_machine(client: TestClient) -> None:
         assert capabilities["rdkit"]["version"]
     else:
         assert "not installed" in capabilities["rdkit"]["reason"]
-    assert capabilities["vina"]["available"] is False
-    assert "not on PATH" in capabilities["vina"]["reason"]
+    vina_present = shutil.which("vina") is not None
+    assert capabilities["vina"]["available"] is vina_present
+    if vina_present:
+        assert "1.2.5" in str(capabilities["vina"]["version"])
+    else:
+        assert "not on PATH" in capabilities["vina"]["reason"]
+    assert capabilities["meeko"]["available"] is True
     assert capabilities["openmm"]["available"] is False
     assert capabilities["pytorch"]["available"] is False
     assert "nvidia-smi" in capabilities["gpu"]["reason"]

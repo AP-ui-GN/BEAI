@@ -49,7 +49,7 @@ Date: 2026-10-13. Limits after Milestone 2. They are not scientific results.
 - Secondary structure uses DSSP when `mkdssp` is on PATH and Biotite P-SEA otherwise. The method record names which one ran.
 - Docking cannot run until Vina and a preparation route exist. The API must say so with HTTP 503. No pose will be invented.
 - Simulation cannot run until OpenMM is installed. Same 503 rule.
-- Compound routes cannot run until RDKit is installed. Same 503 rule.
+- Compound routes run with RDKit. If that import is hidden they return HTTP 503 and protein routes still work.
 - Fixture files saved on 2026-10-11: `1UBQ.pdb`, `1UBQ.cif`, and `4HHB.pdb` from `https://files.rcsb.org/download/`. Checksums are in `backend/tests/fixtures/README.md`. Expected counts are in `backend/tests/fixtures/rcsb_entry_snapshot.json`, copied from the RCSB Data API the same day. The HTML entry pages are client-rendered, so the API behind them was the source.
 - No live call was made to PubChem, ChEMBL, UniProt, openFDA, or a model host. Their current endpoints are unchecked.
 

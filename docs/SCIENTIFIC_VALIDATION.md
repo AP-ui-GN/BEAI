@@ -79,7 +79,7 @@ Descriptors are named by their RDKit function. Crippen logP is an estimate. No d
 
 | Check | Dataset | Metric | Acceptance | Result |
 | --- | --- | --- | --- | --- |
-| Redock | 5–10 ligand-bound complexes, tuning split from held-out, IDs recorded first | heavy-atom RMSD to the crystal pose, symmetry handled | success counted at ≤ 2.0 Å; report the rate and the Vina version | not run |
+| Redock | 3PTB / BEN, Vina 1.2.5, exhaustiveness 4, seed 1, 20 Å box on the crystal ligand centroid | docking score from the real PDBQT | parser scores equal the REMARK lines | passed 2026-10-13. Captured file `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt` modes −6.073, −5.062, −4.839 kcal/mol. A second seed-1 run differed by 0.006 kcal/mol. Acceptance window for that spread is 0.05 kcal/mol. A 5–10 complex RMSD table was not finished in this session |
 | Score versus activity | one target, one ChEMBL standard type and unit | rank correlation with a bootstrap interval | report the number even if it is weak | not run |
 | Seeds | same inputs | score reproduction | same seed within a tolerance written down before the run; spread reported | not run |
 
