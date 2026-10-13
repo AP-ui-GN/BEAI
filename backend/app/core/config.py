@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     storage_dir: Path = Path("data/structures")
     max_upload_bytes: int = 50 * 1024 * 1024
     max_atom_count: int = 200_000
+    max_sequence_length: int = 50_000
     cors_origins: str = "http://127.0.0.1:8732,http://localhost:8732"
     host: str = "127.0.0.1"
     port: int = 8731
@@ -35,7 +36,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     app_version: str = Field(default=__version__)
 
-    @field_validator("max_upload_bytes", "max_atom_count")
+    @field_validator("max_upload_bytes", "max_atom_count", "max_sequence_length")
     @classmethod
     def _positive(cls, value: int) -> int:
         if value <= 0:

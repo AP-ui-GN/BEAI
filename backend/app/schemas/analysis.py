@@ -108,6 +108,7 @@ class AnalysisResult(BaseModel):
     skipped_stages: list[SkippedStage]
     errors: list[ErrorItem]
     reproducibility: Reproducibility
+    details: dict[str, Any] = Field(default_factory=dict)
 
 
 class AnalysisCreate(BaseModel):
@@ -130,6 +131,7 @@ class AnalysisSummary(BaseModel):
     completed_at: str | None
     structure_id: str | None
     structure_filename: str | None
+    sequence_id: str | None = None
     error: AnalysisErrorBody | None
 
 

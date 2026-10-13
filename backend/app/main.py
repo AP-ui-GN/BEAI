@@ -11,6 +11,7 @@ from backend.app.api.errors import register_exception_handlers
 from backend.app.api.routes.analyses import router as analyses_router
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.jobs import router as jobs_router
+from backend.app.api.routes.sequences import router as sequences_router
 from backend.app.api.routes.structures import router as structures_router
 from backend.app.core.config import Settings
 from backend.app.core.logging import configure_logging, request_id_var
@@ -94,6 +95,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(structures_router)
     app.include_router(analyses_router)
     app.include_router(jobs_router)
+    app.include_router(sequences_router)
     return app
 
 

@@ -26,6 +26,21 @@ class Structure(Base):
     metadata_json: Mapped[dict] = mapped_column(JSON, nullable=False)
 
 
+class SequenceRecord(Base):
+    """A validated protein sequence. Gaps are removed before storage."""
+
+    __tablename__ = "sequences"
+    __table_args__ = (Index("ix_sequences_created_at", "created_at"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    header: Mapped[str] = mapped_column(String(500), nullable=False)
+    sequence: Mapped[str] = mapped_column(String, nullable=False)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    source_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    validation_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+
+
 class Job(Base):
     """In-process work item. Progress is null unless the handler can measure it."""
 
@@ -63,6 +78,10 @@ class Analysis(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     structure_id: Mapped[str | None] = mapped_column(
         ForeignKey("structures.id"),
+        nullable=True,
+    )
+    sequence_id: Mapped[str | None] = mapped_column(
+        ForeignKey("sequences.id"),
         nullable=True,
     )
     result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)

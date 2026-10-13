@@ -38,6 +38,7 @@ def _summary(row: Analysis, filename: str | None) -> AnalysisSummary:
         completed_at=utc_iso(row.completed_at) if row.completed_at else None,
         structure_id=row.structure_id,
         structure_filename=filename,
+        sequence_id=row.sequence_id,
         error=error,
     )
 

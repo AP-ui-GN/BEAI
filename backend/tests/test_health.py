@@ -18,7 +18,7 @@ def test_health_returns_real_status(client: TestClient) -> None:
     assert body["version"] == "0.1.0"
     assert body["status"] == "ok"
     assert body["database"]["connected"] is True
-    assert body["database"]["revision"] == body["database"]["head"] == "0002_jobs"
+    assert body["database"]["revision"] == body["database"]["head"] == "0003_sequences"
     assert body["database"]["reason"] is None
     assert body["storage"]["writable"] is True
     assert body["storage"]["reason"] is None
