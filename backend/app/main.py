@@ -19,6 +19,7 @@ from backend.app.api.routes.safety import router as safety_router
 from backend.app.api.routes.sequences import router as sequences_router
 from backend.app.api.routes.simulation import router as simulation_router
 from backend.app.api.routes.structures import router as structures_router
+from backend.app.api.routes.workflows import router as workflows_router
 from backend.app.core.config import Settings
 from backend.app.core.logging import configure_logging, request_id_var
 from backend.app.db.session import make_engine, session_factory
@@ -141,6 +142,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(models_router)
     app.include_router(simulation_router)
     app.include_router(generation_router)
+    app.include_router(workflows_router)
     return app
 
 

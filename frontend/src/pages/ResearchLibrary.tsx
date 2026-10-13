@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
-import { apiGet } from "@/api/client"
-import { buttonVariants } from "@/components/ui/button"
+import { apiGet, apiPost } from "@/api/client"
+import { Button, buttonVariants } from "@/components/ui/button"
 import type { AnalysisListResponse } from "@/types"
 
 export function ResearchLibrary() {
   const [analyses, setAnalyses] = useState<AnalysisListResponse["analyses"]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [workflow, setWorkflow] = useState(
+    '{\n  "name": "example",\n  "steps": [\n    {"id": "compound", "service": "compound_descriptors", "parameters": {"smiles": "CCO"}}\n  ]\n}',
+  )
+  const [workflowNote, setWorkflowNote] = useState<string | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -36,6 +40,39 @@ export function ResearchLibrary() {
           Analyses stored in the local database. Downloads use the saved result, not a new calculation.
         </p>
       </header>
+      <form
+        className="max-w-xl space-y-2"
+        onSubmit={(event) => {
+          event.preventDefault()
+          setError(null)
+          try {
+            const body = JSON.parse(workflow) as unknown
+            void apiPost<{ id: string; result: { limitations: string[] } }>("/api/workflows", body)
+              .then((created) => {
+                setWorkflowNote(created.result.limitations.join(" "))
+                return apiGet<AnalysisListResponse>("/api/analyses")
+              })
+              .then((body) => setAnalyses(body.analyses))
+              .catch((caught: unknown) => setError(caught instanceof Error ? caught.message : "The workflow failed."))
+          } catch {
+            setError("The workflow text is not JSON.")
+          }
+        }}
+      >
+        <h2 className="text-xl">Workflow</h2>
+        <p className="text-sm">A workflow does not draw a scientific conclusion. LLM drafting is off unless the server enables it.</p>
+        <label className="block text-sm" htmlFor="workflow-json">
+          Workflow JSON
+        </label>
+        <textarea
+          id="workflow-json"
+          className="min-h-28 w-full rounded border px-2 py-1 font-mono text-xs"
+          value={workflow}
+          onChange={(event) => setWorkflow(event.target.value)}
+        />
+        <Button type="submit">Run workflow</Button>
+        {workflowNote ? <p className="text-sm">{workflowNote}</p> : null}
+      </form>
       {loading ? <p role="status">Loading saved analyses…</p> : null}
       {error ? <p role="alert">{error}</p> : null}
       {!loading && analyses.length === 0 ? <p>No analyses have been saved yet.</p> : null}

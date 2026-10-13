@@ -144,6 +144,14 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
 - `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
 
+## 2026-10-13 — Milestone 6 session 6F, workflows
+
+- JSON workflows run structure overview and compound descriptors, and skip docking when Vina is not on PATH. Dependent steps skip too.
+- Resume skips steps that already succeeded.
+- `.venv/bin/python -m pytest` — **109 passed, 3 deselected, 0 failed**.
+- `npm --prefix frontend run build` — completed.
+- `BEAI_LLM_ENABLED` defaults off. Summarize returns HTTP 503. With the flag on, a citation absent from the retrieved id set is rejected and a matching citation is labelled `ml_generated`.
+
 ## 2026-10-13 — Milestone 6 session 6E, molecular generation
 
 - BRICS recombination of reference molecules. PAINS, Brenk, and NIH stay on. A request that sets filters off, or that mentions toxicity, returns HTTP 422 and stores nothing.

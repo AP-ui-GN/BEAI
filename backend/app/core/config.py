@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     app_version: str = Field(default=__version__)
     register_builtins: bool = True
+    llm_enabled: bool = False
 
     @field_validator("max_upload_bytes", "max_atom_count", "max_sequence_length", "max_heavy_atoms")
     @classmethod

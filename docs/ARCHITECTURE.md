@@ -40,6 +40,10 @@ The CPU torch wheel was installed with:
 | joblib | 1.6.0 | BSD-3-Clause | Installed with scikit-learn. The artifact uses numpy and safetensors, not a pickle |
 | torch-geometric | 2.8.1 | MIT | Package directory about 13 MB. Installed cleanly on this CPU torch build |
 
+## Workflows (session 6F)
+
+`POST /api/workflows` accepts a JSON definition. Each step names `structure_overview`, `compound_descriptors`, or `docking`. A skipped step records a reason, and steps that depend on it are skipped. `resume_from` is the id of an earlier workflow analysis. `BEAI_LLM_ENABLED` defaults to false.
+
 ## Simulation (session 6D)
 
 `POST /api/simulation` runs PDBFixer preparation and either energy minimization or a capped OpenMM trajectory. The step cap is 500. The minimization cap is 100 iterations. `GET /api/health` lists `openmm_platforms` from `Platform.getNumPlatforms()`. On this machine those names are Reference and CPU.
