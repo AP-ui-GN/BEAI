@@ -10,7 +10,8 @@ API: `http://127.0.0.1:8731`. App: `http://127.0.0.1:8732`. Alembic head is stil
 
 ## Verified
 
-- `.venv/bin/python -m pytest` — 109 passed, 3 deselected (`network` and `model`), 0 failed.
+- `.venv/bin/python -m pytest` — 118 passed, 3 deselected (`network` and `model`), 0 failed.
+- `npm --prefix frontend test` — 9 passed, 0 failed.
 - `npm --prefix frontend run build` — completed.
 - A workflow on the synthetic peptide plus ethanol returned a real polymer-residue measurement and canonical SMILES `CCO`.
 - Resume reran only the failed step.

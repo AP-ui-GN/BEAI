@@ -4,6 +4,7 @@
 
 - When `vina` is on PATH, a workflow docking step calls the same Vina runner as `POST /api/docking` and stores the parsed modes plus the PDBQT text. A 3PTB / benzamidine workflow step was checked against the REMARK line in that output.
 - When Vina is hidden, the step is still skipped and dependent steps are skipped.
+- After `dssp` 4.2.2 was installed, `.venv/bin/python -m pytest` — 118 passed, 3 deselected (`network` and `model`), 0 failed. `npm --prefix frontend test` — 9 passed. `npm --prefix frontend run build` completed.
 
 ## 2026-10-13 — Simulation checkpoint resume
 
