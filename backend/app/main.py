@@ -16,6 +16,7 @@ from backend.app.api.routes.jobs import router as jobs_router
 from backend.app.api.routes.models import router as models_router
 from backend.app.api.routes.safety import router as safety_router
 from backend.app.api.routes.sequences import router as sequences_router
+from backend.app.api.routes.simulation import router as simulation_router
 from backend.app.api.routes.structures import router as structures_router
 from backend.app.core.config import Settings
 from backend.app.core.logging import configure_logging, request_id_var
@@ -75,8 +76,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.jobs = runner
         runner.start()
         from backend.app.services.properties.job import run_solubility_job
+        from backend.app.services.simulation.job import run_simulation_job
 
         runner.register("solubility_training", run_solubility_job)
+        runner.register("simulation", run_simulation_job)
         if app.state.settings.register_builtins:
             from backend.app.services.embeddings.builtins import sync_builtin_models
             from backend.app.services.properties.builtin import sync_solubility_model
@@ -135,6 +138,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(docking_router)
     app.include_router(safety_router)
     app.include_router(models_router)
+    app.include_router(simulation_router)
     return app
 
 

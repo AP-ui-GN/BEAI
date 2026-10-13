@@ -24,6 +24,8 @@ dependencies = [
     "gemmi==0.7.5",
     "psutil==7.2.2",
     "scikit-learn==1.9.1",
+    "openmm==8.6.1",
+    "pdbfixer==1.12.0",
 ]
 
 [project.optional-dependencies]

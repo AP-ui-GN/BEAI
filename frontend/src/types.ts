@@ -18,6 +18,7 @@ export type HealthResponse = {
     reason: string | null
   }
   capabilities: Record<string, CapabilityStatus>
+  openmm_platforms?: string[]
 }
 
 export type AnalysisErrorBody = {

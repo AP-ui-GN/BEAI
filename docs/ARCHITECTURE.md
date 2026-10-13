@@ -40,6 +40,15 @@ The CPU torch wheel was installed with:
 | joblib | 1.6.0 | BSD-3-Clause | Installed with scikit-learn. The artifact uses numpy and safetensors, not a pickle |
 | torch-geometric | 2.8.1 | MIT | Package directory about 13 MB. Installed cleanly on this CPU torch build |
 
+## Simulation (session 6D)
+
+`POST /api/simulation` runs PDBFixer preparation and either energy minimization or a capped OpenMM trajectory. The step cap is 500. The minimization cap is 100 iterations. `GET /api/health` lists `openmm_platforms` from `Platform.getNumPlatforms()`. On this machine those names are Reference and CPU.
+
+| Package | Version | Licence metadata | Notes |
+| --- | --- | --- | --- |
+| openmm | 8.6.1 | Python Software Foundation License (BSD-like), as the wheel metadata reported it | Wheel about 14.4 MB. Package directory about 70 MB |
+| pdbfixer | 1.12.0 | MIT | Source distribution about 666 kB. Package directory about 2.9 MB |
+
 ## Evidence categories (Milestone 5)
 
 | Category | What is allowed to use it |

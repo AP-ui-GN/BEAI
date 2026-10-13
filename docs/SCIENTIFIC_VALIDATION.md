@@ -123,7 +123,19 @@ Split, chosen before fitting: Murcko scaffolds kept together, scaffolds shuffled
 
 Intervals are the bootstrap percentiles. A second run with the same seed matched RMSE within 1e-6. The GCN R-squared is negative on this split: it did worse than the mean of the test labels. That result is the one the run produced. None of these numbers are experimental solubilities.
 
-OpenMM and generation have no results yet.
+### OpenMM (session 6D)
+
+Platforms reported by OpenMM 8.6.1 on this machine: Reference and CPU. CUDA, OpenCL, and Metal were not in that list.
+
+Preparation is PDBFixer 1.12.0 at pH 7.0: missing residues, nonstandard residues, heterogen removal, missing atoms, hydrogens. Force field files `amber14-all.xml` and `implicit/gbn2.xml`, nonbonded method NoCutoff, constraints HBonds. CPU platform with `OPENMM_CPU_THREADS=1`.
+
+Minimization on 1UBQ, 5 iterations, lowered the potential energy (the automated test asserts final < initial). A separate 20-iteration probe the same day went from -328.93633723496714 kJ/mol to -8331.638644503953 kJ/mol. Minimization is not molecular dynamics.
+
+NVE: 20 steps, 1 fs, Verlet, zero initial velocities, after 20 minimization iterations. The pre-registered relative total-energy drift bound was 0.02. It was not stable. One run was 0.0004987123454089311 (E0 -10170.949423790193 kJ/mol, E1 -10176.021801832367 kJ/mol). An earlier run the same day was 0.08066315438678218 (E0 -694.7754278681138, E1 -750.818205470382). The 0.02 bound is not treated as met.
+
+Langevin: 15 steps, 1 fs, seed 7, velocities drawn with that seed, after 15 minimization iterations. Mean kinetic temperature 260.1331467073965 K, inside the pre-registered window 150 K to 450 K. Two runs on the same prepared system differed by 1.6878309150943096 kJ/mol in final total energy. The pre-registered 1.0 kJ/mol reproduction bound was missed. Unseeded runs earlier were hundreds to thousands of kJ/mol apart.
+
+A short simulation is not evidence of stability, binding, or efficacy. Generation has no results yet.
 
 - Embeddings: on a small curated pair set, rank correlation between embedding cosine similarity and pairwise alignment identity, with a bootstrap interval. No functional or structural claim.
 - Solubility: public set such as ESOL, checksum and licence recorded, scaffold split saved with its seed, baseline beside any neural model, RMSE, MAE, and R-squared with bootstrap intervals.

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Request
 
-from backend.app.core.capabilities import probe_all
+from backend.app.core.capabilities import openmm_platform_names, probe_all
 from backend.app.core.config import Settings
 from backend.app.db.health import alembic_head, database_status, storage_status
 from backend.app.schemas.health import HealthResponse
@@ -22,4 +22,5 @@ def get_health(request: Request) -> HealthResponse:
         database=database,
         storage=storage,
         capabilities=probe_all(),
+        openmm_platforms=openmm_platform_names(),
     )

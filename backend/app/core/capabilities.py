@@ -82,6 +82,16 @@ def probe_gpu() -> dict[str, Any]:
     return _available(version)
 
 
+def openmm_platform_names() -> list[str]:
+    """Return OpenMM platform names. An import failure is an empty list, not a guessed device."""
+
+    try:
+        from openmm import Platform
+    except Exception:
+        return []
+    return [Platform.getPlatform(index).getName() for index in range(Platform.getNumPlatforms())]
+
+
 def probe_all() -> dict[str, dict[str, Any]]:
     """Capability map required by ``GET /api/health``."""
 

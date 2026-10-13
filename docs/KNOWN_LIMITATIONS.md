@@ -2,6 +2,16 @@
 
 Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 
+## Session 6D
+
+- OpenMM platforms on this machine are Reference and CPU. There is no CUDA, OpenCL, or Metal platform.
+- The pre-registered NVE relative drift of 0.02 was not stable on 1UBQ. See `docs/SCIENTIFIC_VALIDATION.md`.
+- The same-seed total-energy gap missed the 1.0 kJ/mol target on one run (1.6878 kJ/mol).
+- User dynamics are capped at 500 steps and minimization at 100 iterations.
+- Checkpoint resume is not implemented. An interrupted job is still marked failed by the existing runner.
+- PDBFixer removes heterogens and adds atoms. That changes the input structure and the notes say so.
+- fpocket is still absent. The Milestone 4 5–10 complex RMSD table was not run. Open Targets, DailyMed, and Europe PMC were not built.
+
 ## Session 6C
 
 - Solubility outputs are ML predictions. The UI and the method text say they are not experimental measurements.

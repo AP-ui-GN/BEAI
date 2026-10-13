@@ -28,7 +28,8 @@ def test_health_returns_real_status(client: TestClient) -> None:
 
 
 def test_optional_tools_match_this_machine(client: TestClient) -> None:
-    capabilities = client.get("/api/health").json()["capabilities"]
+    body = client.get("/api/health").json()
+    capabilities = body["capabilities"]
     assert set(capabilities) == set(CAPABILITIES)
     for status in capabilities.values():
         assert set(status) == {"available", "version", "reason"}
@@ -55,7 +56,16 @@ def test_optional_tools_match_this_machine(client: TestClient) -> None:
     else:
         assert "not on PATH" in capabilities["vina"]["reason"]
     assert capabilities["meeko"]["available"] is True
-    assert capabilities["openmm"]["available"] is False
+    openmm_present = importlib.util.find_spec("openmm") is not None
+    assert capabilities["openmm"]["available"] is openmm_present
+    if openmm_present:
+        from backend.app.core.capabilities import openmm_platform_names
+
+        assert body["openmm_platforms"] == openmm_platform_names()
+        assert body["openmm_platforms"]
+    else:
+        assert body["openmm_platforms"] == []
+        assert "not installed" in capabilities["openmm"]["reason"]
     torch_present = importlib.util.find_spec("torch") is not None
     assert capabilities["pytorch"]["available"] is torch_present
     if torch_present:

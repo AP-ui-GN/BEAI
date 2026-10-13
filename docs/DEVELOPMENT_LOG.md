@@ -144,6 +144,15 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
 - `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
 
+## 2026-10-13 — Milestone 6 session 6D, OpenMM
+
+- Installed openmm 8.6.1 (wheel metadata: Python Software Foundation License (BSD-like); wheel about 14.4 MB; package directory about 70 MB) and pdbfixer 1.12.0 (MIT). Platforms: Reference and CPU.
+- 1UBQ minimization lowered the potential energy. A 20-iteration probe went from -328.93633723496714 to -8331.638644503953 kJ/mol.
+- NVE relative drift on one 20-step run was 0.0004987123454089311. An earlier run was 0.08066315438678218. The 0.02 bound is not stable.
+- Langevin mean temperature 260.1331467073965 K. Same-seed total-energy gap 1.6878309150943096 kJ/mol, which missed the 1.0 kJ/mol target.
+- `.venv/bin/python -m pytest` — **103 passed, 3 deselected, 0 failed**.
+- `npm --prefix frontend test` — 9 passed. `npm --prefix frontend run build` completed.
+
 ## 2026-10-13 — Milestone 6 session 6C, solubility models
 
 - Delaney CSV downloaded from the DeepChem `load_delaney` URL. sha256 `8c06a76f0c6487d29ab0f903e6a7a7139f189ab3c1178f159c8be8964602f189`, 96699 bytes. The file has no licence line. DeepChem's LICENSE is MIT for the software.

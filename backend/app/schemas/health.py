@@ -29,3 +29,4 @@ class HealthResponse(BaseModel):
     database: DatabaseStatus
     storage: StorageStatus
     capabilities: dict[str, CapabilityStatus]
+    openmm_platforms: list[str]
