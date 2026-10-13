@@ -13,6 +13,7 @@ from backend.app.api.routes.compounds import router as compounds_router
 from backend.app.api.routes.docking import router as docking_router
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.jobs import router as jobs_router
+from backend.app.api.routes.safety import router as safety_router
 from backend.app.api.routes.sequences import router as sequences_router
 from backend.app.api.routes.structures import router as structures_router
 from backend.app.core.config import Settings
@@ -114,6 +115,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(sequences_router)
     app.include_router(compounds_router)
     app.include_router(docking_router)
+    app.include_router(safety_router)
     return app
 
 

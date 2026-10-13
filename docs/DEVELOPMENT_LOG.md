@@ -143,4 +143,12 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - Ubuntu package `autodock-vina` 1.2.5. Meeko 0.8.0 (LGPL-2.1, about 9.2 MB) and gemmi 0.7.5 (MPL-2.0, about 6.9 MB). Meeko 0.6.1 does not support Python 3.12.
 - A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
 - `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
+
+## 2026-10-13 — Milestone 5, therapeutic safety evidence
+
+- openFDA label and FAERS count responses, and a PubMed esearch/esummary pair, were saved from live calls on 2026-10-13 and used as mock bodies.
+- Label section text is stored verbatim. FAERS items are observational and include the not-causal statement. Literature stays unclassified. Similarity off-targets are computational_prediction and unverified.
+- An overdose-worded query returns the poison-control pointer. The Drug Safety page carries the research-use banner and does not offer dosing or medication changes.
+- `.venv/bin/python -m pytest` — **78 passed, 1 deselected, 0 failed**.
+- `npm --prefix frontend run build` — completed.
 - A 5–10 complex heavy-atom RMSD table was not run. That gap is in `docs/SCIENTIFIC_VALIDATION.md`. No pose was invented.

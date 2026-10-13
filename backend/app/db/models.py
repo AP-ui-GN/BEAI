@@ -26,6 +26,18 @@ class Structure(Base):
     metadata_json: Mapped[dict] = mapped_column(JSON, nullable=False)
 
 
+class SafetyLookup(Base):
+    """Retrieved safety evidence. The payload is source text, not advice."""
+
+    __tablename__ = "safety_lookups"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    query: Mapped[str] = mapped_column(String, nullable=False)
+    kind: Mapped[str] = mapped_column(String(32), nullable=False)
+    payload_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class CompoundRecord(Base):
     """A sanitized molecule. Canonical SMILES are RDKit's, with the RDKit version in the analysis."""
 

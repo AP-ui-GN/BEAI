@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { Dashboard } from "@/pages/Dashboard"
 import { CompoundExplorer } from "@/pages/CompoundExplorer"
 import { DrugDiscovery } from "@/pages/DrugDiscovery"
+import { DrugSafety } from "@/pages/DrugSafety"
 import { PlannedRoute } from "@/pages/Planned"
 import { ProteinExplorer } from "@/pages/ProteinExplorer"
 import { ResearchLibrary } from "@/pages/ResearchLibrary"
@@ -20,16 +21,7 @@ export default function App() {
             <Route path="proteins/:structureId" element={<ProteinExplorer />} />
             <Route path="compounds" element={<CompoundExplorer />} />
             <Route path="discovery" element={<DrugDiscovery />} />
-            <Route
-              path="safety"
-              element={
-                <PlannedRoute
-                  title="Drug Safety"
-                  summary="Source-linked evidence review is planned. This page does not score interactions, suggest doses, or store medication lists."
-                  safety
-                />
-              }
-            />
+            <Route path="safety" element={<DrugSafety />} />
             <Route
               path="simulation"
               element={

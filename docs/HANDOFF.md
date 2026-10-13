@@ -1,6 +1,6 @@
 # Handoff
 
-Date: 2026-10-13. Milestone 4 docking is on `m4-docking`, branched from `m3-compounds`. A full 5–10 complex redock RMSD table is not finished. Milestone 5 has not started.
+Date: 2026-10-13. Milestone 5 safety evidence is on `m5-safety`, branched from `m4-docking`. Milestone 6 has not started. Docking still lacks a 5–10 complex RMSD table.
 
 ## Current state
 

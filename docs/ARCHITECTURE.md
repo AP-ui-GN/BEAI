@@ -2,6 +2,16 @@
 
 Date: 2026-10-13. Milestone 2 is implemented on `m2-protein`. The "Milestone 1 as built" section is unchanged history. The "Milestone 2 as built" section is what the code does now.
 
+## Evidence categories (Milestone 5)
+
+| Category | What is allowed to use it |
+| --- | --- |
+| established | Regulatory label section text and curated mechanism records, stored verbatim |
+| observational | FAERS counts and other spontaneous-report data. Always paired with the not-causal statement |
+| computational_prediction | Similarity-based target hypotheses. Always labelled unverified |
+| hypothesis | Unverified proposals. Not auto-assigned |
+| unclassified | Literature, with the publication type as retrieved, until a person sets a category |
+
 ## Milestone 2 as built
 
 Protein work adds an in-process job runner, sequence statistics, DSSP or P-SEA secondary structure, Shrake-Rupley SASA, contacts, hydrogen-bond estimates, C-alpha superposition, a baseline pocket detector, and RCSB/UniProt import. Optional tools that are still absent stay on `/api/health` with a reason. Pocket detection and comparison run as jobs. A missing fpocket install skips that stage and still runs the baseline detector.
