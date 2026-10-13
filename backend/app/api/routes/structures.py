@@ -1,6 +1,6 @@
 """Structure upload and fetch. Parsing lives in the structure service."""
 
-from fastapi import APIRouter, Depends, File, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Query, Request, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
@@ -8,7 +8,8 @@ from backend.app.core.config import Settings
 from backend.app.core.timeutil import utc_iso
 from backend.app.db.models import Structure
 from backend.app.db.session import get_session
-from backend.app.schemas.structure import StructureListResponse, StructureResponse
+from backend.app.schemas.structure import ResidueListResponse, ResidueRow, StructureListResponse, StructureResponse
+from backend.app.services.structure.deep import residue_table
 from backend.app.services.structure.ingest import (
     get_structure,
     ingest_structure,
@@ -53,6 +54,23 @@ def get_structure_by_id(
     session: Session = Depends(get_session),
 ) -> StructureResponse:
     return _to_response(get_structure(session, structure_id))
+
+
+@router.get("/{structure_id}/residues", response_model=ResidueListResponse)
+def list_residues(
+    structure_id: str,
+    request: Request,
+    chain: str | None = Query(default=None),
+    session: Session = Depends(get_session),
+) -> ResidueListResponse:
+    settings: Settings = request.app.state.settings
+    row = get_structure(session, structure_id)
+    path = structure_file(settings, row)
+    rows = residue_table(path, row.format, chain)
+    return ResidueListResponse(
+        chain_id=chain,
+        residues=[ResidueRow.model_validate(item) for item in rows],
+    )
 
 
 @router.get("/{structure_id}/file")

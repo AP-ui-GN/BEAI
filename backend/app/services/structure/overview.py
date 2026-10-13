@@ -23,6 +23,7 @@ from Bio import __version__ as biopython_version
 from Bio.PDB import MMCIFParser, PDBParser
 
 from backend.app.services.structure.ccd import component_table
+from backend.app.services.structure.deep import enrich_overview
 from backend.app.services.structure.geometry import bounding_box, distance, radius_of_gyration
 from backend.app.services.structure.header import (
     read_author_metadata,
@@ -57,7 +58,9 @@ _LIMITATIONS = [
         "Sequence agreement that is explained by missing residues compares residue-name multisets. "
         "It is not a residue-by-residue alignment."
     ),
-    "This overview does not compute secondary structure, solvent-accessible surface, energies, or hydrogen bonds.",
+    "Secondary structure from DSSP or P-SEA is not the depositor HELIX and SHEET annotation. Both are reported.",
+    "Solvent-accessible surface is a Shrake-Rupley calculation, not an experimental area.",
+    "Hydrogen-bond rows are heavy-atom proximity estimates when hydrogens are absent.",
 ]
 
 
@@ -471,7 +474,7 @@ def build_structure_overview(
             "Minimum, maximum, and arithmetic mean occupancy of selected atoms on each chain.",
         ),
     ]
-    return {
+    result = {
         "analysis_id": analysis_id,
         "kind": "structure_overview",
         "created_at": created_at,
@@ -511,6 +514,7 @@ def build_structure_overview(
             "platform": platform.platform(),
         },
     }
+    return enrich_overview(result, residues, path, structure_format, model)
 
 
 def _ca(residue: ResidueRecord) -> tuple[float, float, float] | None:

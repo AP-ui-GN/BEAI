@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from backend.app.core.config import Settings
 from backend.app.main import create_app
 
-CAPABILITIES = ("rdkit", "mkdssp", "vina", "openmm", "pytorch", "gpu")
+CAPABILITIES = ("rdkit", "biotite", "mkdssp", "fpocket", "vina", "openmm", "pytorch", "gpu")
 
 
 def test_health_returns_real_status(client: TestClient) -> None:
@@ -37,6 +37,10 @@ def test_optional_tools_match_this_machine(client: TestClient) -> None:
         else:
             assert status["version"] is None
             assert isinstance(status["reason"], str) and status["reason"]
+    assert capabilities["biotite"]["available"] is True
+    assert capabilities["biotite"]["version"]
+    assert capabilities["fpocket"]["available"] is False
+    assert "not on PATH" in capabilities["fpocket"]["reason"]
     assert capabilities["rdkit"]["available"] is False
     assert "not installed" in capabilities["rdkit"]["reason"]
     assert capabilities["vina"]["available"] is False

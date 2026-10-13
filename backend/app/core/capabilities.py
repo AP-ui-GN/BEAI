@@ -87,7 +87,9 @@ def probe_all() -> dict[str, dict[str, Any]]:
 
     return {
         "rdkit": probe_import("rdkit", "RDKit"),
+        "biotite": probe_import("biotite", "Biotite"),
         "mkdssp": probe_executable(["mkdssp", "dssp"], "mkdssp"),
+        "fpocket": probe_executable(["fpocket"], "fpocket"),
         "vina": probe_executable(["vina"], "Vina"),
         "openmm": probe_import("openmm", "OpenMM"),
         "pytorch": probe_import("torch", "PyTorch"),
