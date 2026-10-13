@@ -1,5 +1,11 @@
 # Development log
 
+## 2026-10-13 — DailyMed, Europe PMC, and Open Targets
+
+- DailyMed v2 SPL search and SPL XML docs were read at `dailymed.nlm.nih.gov/dailymed/webservices-help/v2/` before coding. A warfarin search and SPL were saved. openFDA failure falls back to that source. Both failing stores no row.
+- Europe PMC REST search docs were read at `europepmc.org/RestfulWebService`. Saved an aspirin page and an open-access page. Abstracts are stored only when `isOpenAccess` is Y and a licence is present. Results stay unclassified.
+- Open Targets GraphQL docs were read at `platform-docs.opentargets.org/data-access/graphql-api`. A VKORC1 query returned safety liabilities and disease associations. Those rows stay unclassified. The association score is not described as efficacy.
+
 ## 2026-10-13 — Milestone 4 redocking RMSD table
 
 - AutoDock Vina v1.2.5 (`autodock-vina` 1.2.5-2build1). Command: `.venv/bin/python -m backend.app.services.docking.redock`.

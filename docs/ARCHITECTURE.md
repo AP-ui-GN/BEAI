@@ -61,7 +61,7 @@ The CPU torch wheel was installed with:
 | observational | FAERS counts and other spontaneous-report data. Always paired with the not-causal statement |
 | computational_prediction | Similarity-based target hypotheses. Always labelled unverified |
 | hypothesis | Unverified proposals. Not auto-assigned |
-| unclassified | Literature, with the publication type as retrieved, until a person sets a category |
+| unclassified | Literature, with the publication type as retrieved, until a person sets a category. Europe PMC results use this category. An abstract is stored only when `isOpenAccess` is Y and the record includes a licence. Open Targets safety liabilities and disease-association rows also stay unclassified: they are platform records, not a regulatory label and not a BEAI prediction |
 
 ## Milestone 2 as built
 

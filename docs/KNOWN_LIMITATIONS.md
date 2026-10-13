@@ -24,7 +24,7 @@ Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 - User dynamics are capped at 500 steps and minimization at 100 iterations.
 - Checkpoint resume is not implemented. An interrupted job is still marked failed by the existing runner.
 - PDBFixer removes heterogens and adds atoms. That changes the input structure and the notes say so.
-- fpocket is still absent. The Milestone 4 redocking table is in `docs/SCIENTIFIC_VALIDATION.md`. Held-out success was 2/5. 2PK4, 4DFR, and 1DWD have no RMSD because receptor preparation failed. Open Targets, DailyMed, and Europe PMC were not built.
+- fpocket is still absent. The Milestone 4 redocking table is in `docs/SCIENTIFIC_VALIDATION.md`. Held-out success was 2/5. 2PK4, 4DFR, and 1DWD have no RMSD because receptor preparation failed.
 
 ## Session 6C
 
@@ -32,7 +32,7 @@ Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 - The two-layer GCN had a negative R-squared on the scaffold test split. It is reported beside the Ridge baselines and was not tuned to change that.
 - Applicability uses a pre-registered maximum Morgan Tanimoto of 0.3 against the training set. That threshold was not fit to the test labels.
 - The Delaney CSV is not committed. Training checks the recorded sha256. The file itself has no licence line.
-- OpenMM is still not installed. fpocket is still absent. Open Targets, DailyMed, and Europe PMC were not built. The later redocking table is in `docs/SCIENTIFIC_VALIDATION.md`.
+- OpenMM is still not installed. fpocket is still absent. The later redocking table is in `docs/SCIENTIFIC_VALIDATION.md`. Open Targets, DailyMed, and Europe PMC are retrieved sources.
 
 ## Session 6B
 
@@ -40,7 +40,7 @@ Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 - Sequences longer than 1026 tokens, including special tokens, are refused. They are not chunked.
 - J is a legal sequence letter here and is `<unk>` in this vocab, so those sequences are not embedded.
 - The declared 512 MiB RAM floor is not a measured peak.
-- OpenMM is still not installed. fpocket is still absent. Open Targets, DailyMed, and Europe PMC were not built. The later redocking table is in `docs/SCIENTIFIC_VALIDATION.md`.
+- OpenMM is still not installed. fpocket is still absent. The later redocking table is in `docs/SCIENTIFIC_VALIDATION.md`. Open Targets, DailyMed, and Europe PMC are retrieved sources.
 
 ## Session 6A
 

@@ -51,21 +51,27 @@ class ExternalHttp:
         return body
 
     def get_json(self, url: str) -> dict:
-        body = self.get_bytes(url)
-        try:
-            parsed = json.loads(body)
-        except json.JSONDecodeError as exc:
-            raise ExternalServiceError(f"{_host(url)} returned a response that was not JSON.") from exc
-        if not isinstance(parsed, dict):
-            raise ExternalServiceError(f"{_host(url)} returned JSON that was not an object.")
-        return parsed
+        return _object(self.get_bytes(url), url)
 
-    def _request(self, url: str) -> bytes:
+    def post_json(self, url: str, payload: dict) -> dict:
+        """POST a JSON body. The response is not cached."""
+
+        body = json.dumps(payload).encode("utf-8")
+        return _object(self._request(url, content=body), url)
+
+    def _request(self, url: str, content: bytes | None = None) -> bytes:
         last_status: int | None = None
         for attempt in range(3):
             self._throttle(url)
             try:
-                response = self._client.get(url)
+                if content is None:
+                    response = self._client.get(url)
+                else:
+                    response = self._client.post(
+                        url,
+                        content=content,
+                        headers={"Content-Type": "application/json"},
+                    )
             except httpx.HTTPError as exc:
                 last_status = None
                 if attempt == 2:
@@ -115,3 +121,13 @@ class ExternalHttp:
 
 def _host(url: str) -> str:
     return urlparse(url).netloc or "the external service"
+
+
+def _object(body: bytes, url: str) -> dict:
+    try:
+        parsed = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise ExternalServiceError(f"{_host(url)} returned a response that was not JSON.") from exc
+    if not isinstance(parsed, dict):
+        raise ExternalServiceError(f"{_host(url)} returned JSON that was not an object.")
+    return parsed

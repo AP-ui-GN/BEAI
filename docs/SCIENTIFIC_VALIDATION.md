@@ -109,6 +109,8 @@ This module is not a clinical model and has no accuracy target.
 
 Validation is provenance tests: label text stored verbatim, FAERS always observational, similarity off-targets always `computational_prediction` and "unverified", literature `unclassified` until a person sets a category, and no interaction pair that is absent from retrieved text. Network failure stores no report content.
 
+DailyMed is the fallback when openFDA label retrieval fails. The warfarin search and SPL saved on 2026-10-13 are `backend/tests/fixtures/safety/dailymed_warfarin_spls.json` and `dailymed_warfarin_spl.xml`. Section text is copied from the SPL. Europe PMC search responses saved the same day are `europepmc_aspirin.json` and `europepmc_oa.json`. The aspirin record is not open access, so its abstract is not stored. The open-access record keeps `abstractText` and licence `cc by`. The Open Targets VKORC1 response is `opentargets_vkorc1.json`. Safety liabilities and disease scores are unclassified. A failed request stores no row.
+
 ## Models and simulation (Milestone 6)
 
 ### Embeddings (session 6B)
