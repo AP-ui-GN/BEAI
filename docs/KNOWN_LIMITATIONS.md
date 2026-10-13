@@ -22,7 +22,7 @@ Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 - The pre-registered NVE relative drift of 0.02 was not stable on 1UBQ. See `docs/SCIENTIFIC_VALIDATION.md`.
 - The same-seed total-energy gap missed the 1.0 kJ/mol target on one run (1.6878 kJ/mol).
 - User dynamics are capped at 500 steps and minimization at 100 iterations.
-- Checkpoint resume is not implemented. An interrupted job is still marked failed by the existing runner.
+- An interrupted job is still marked failed when the server restarts. A dynamics checkpoint written before the interruption can be resumed. Resume reloads the prepared PDB from that job instead of running PDBFixer again.
 - PDBFixer removes heterogens and adds atoms. That changes the input structure and the notes say so.
 - fpocket is still absent. The Milestone 4 redocking table is in `docs/SCIENTIFIC_VALIDATION.md`. Held-out success was 2/5. 2PK4, 4DFR, and 1DWD have no RMSD because receptor preparation failed.
 

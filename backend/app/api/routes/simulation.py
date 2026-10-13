@@ -23,6 +23,7 @@ class SimulationRequest(BaseModel):
     steps: int = Field(default=20, ge=1, le=MAX_STEPS)
     temperature_kelvin: float = 300.0
     integrator: str = "langevin"
+    resume_from: str | None = None
 
 
 @router.post("", status_code=202, response_model=JobResponse)

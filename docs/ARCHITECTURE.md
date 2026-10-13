@@ -46,7 +46,7 @@ The CPU torch wheel was installed with:
 
 ## Simulation (session 6D)
 
-`POST /api/simulation` runs PDBFixer preparation and either energy minimization or a capped OpenMM trajectory. The step cap is 500. The minimization cap is 100 iterations. `GET /api/health` lists `openmm_platforms` from `Platform.getNumPlatforms()`. On this machine those names are Reference and CPU.
+`POST /api/simulation` runs PDBFixer preparation and either energy minimization or a capped OpenMM trajectory. The step cap is 500. The minimization cap is 100 iterations. Dynamics writes `state.xml` and the prepared PDB under the storage directory for that job. `resume_from` reloads those files and continues the remaining steps. `GET /api/health` lists `openmm_platforms` from `Platform.getNumPlatforms()`. On this machine those names are Reference and CPU.
 
 | Package | Version | Licence metadata | Notes |
 | --- | --- | --- | --- |

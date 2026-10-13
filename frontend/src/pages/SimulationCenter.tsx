@@ -16,6 +16,7 @@ export function SimulationCenter() {
   const [openmm, setOpenmm] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
   const [job, setJob] = useState<JobResponse | null>(null)
+  const [resumeFrom, setResumeFrom] = useState("")
   const [result, setResult] = useState<AnalysisDetail | null>(null)
   const [frame, setFrame] = useState(0)
 
@@ -43,7 +44,12 @@ export function SimulationCenter() {
     setError(null)
     setResult(null)
     try {
-      const created = await apiPost<JobResponse>("/api/simulation", { structure_id: structureId, mode, seed: 1 })
+      const created = await apiPost<JobResponse>("/api/simulation", {
+        structure_id: structureId,
+        mode,
+        seed: 1,
+        ...(resumeFrom.trim() && mode === "dynamics" ? { resume_from: resumeFrom.trim() } : {}),
+      })
       setJob(created)
       let current = created
       while (current.status === "pending" || current.status === "running") {
@@ -89,6 +95,10 @@ export function SimulationCenter() {
           </option>
         ))}
       </select>
+      <label className="block text-sm" htmlFor="resume-job">
+        Resume dynamics from job id
+      </label>
+      <Input id="resume-job" value={resumeFrom} onChange={(event) => setResumeFrom(event.target.value)} />
       <div className="flex flex-wrap gap-2">
         <Button type="button" disabled={!structureId || openmm.startsWith("Unavailable")} onClick={() => void start("minimization")}>
           Minimize
@@ -99,7 +109,7 @@ export function SimulationCenter() {
       </div>
       {job ? (
         <p role="status">
-          Job {job.status}
+          Job {job.id} {job.status}
           {job.progress == null ? "" : ` · progress ${job.progress}`}
         </p>
       ) : null}

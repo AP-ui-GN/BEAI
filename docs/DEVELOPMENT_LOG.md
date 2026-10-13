@@ -1,5 +1,11 @@
 # Development log
 
+## 2026-10-13 — Simulation checkpoint resume
+
+- Dynamics jobs write an OpenMM checkpoint and the prepared PDB. Resume reloads that PDB. A second PDBFixer call is not used, because two calls on 1UBQ did not reproduce coordinates.
+- Langevin seed 11, 4 steps of 1 fs, checkpoint at step 2. Maximum absolute coordinate difference versus the continuous run was 7.993713069254227e-08 Å. The recorded NVE drift was not recomputed.
+- A finished checkpoint fails the job and stores no energies. An interrupted running job is still marked failed on restart; the checkpoint file remains.
+
 ## 2026-10-13 — DailyMed, Europe PMC, and Open Targets
 
 - DailyMed v2 SPL search and SPL XML docs were read at `dailymed.nlm.nih.gov/dailymed/webservices-help/v2/` before coding. A warfarin search and SPL were saved. openFDA failure falls back to that source. Both failing stores no row.

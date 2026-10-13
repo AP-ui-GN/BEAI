@@ -95,11 +95,22 @@ def run_dynamics(
     timestep_fs: float,
     minimize_iterations: int = 0,
     cancelled=None,
+    checkpoint_path: Path | None = None,
+    on_checkpoint=None,
+    halt_after: int | None = None,
+    resume_checkpoint: Path | None = None,
+    completed_steps: int = 0,
 ) -> dict[str, Any]:
-    """Run a capped trajectory. ``cancelled`` is checked between steps."""
+    """Run a capped trajectory. ``cancelled`` is checked between steps.
+
+    A checkpoint file is the OpenMM state. Loading it skips minimization and
+    velocity assignment so the saved step can continue.
+    """
 
     if steps < 1 or steps > MAX_STEPS:
         raise InvalidInput(f"Dynamics steps must be from 1 to {MAX_STEPS}.")
+    if completed_steps < 0 or completed_steps > steps:
+        raise InvalidInput("The checkpoint step is outside the requested step count.")
     simulation, platform_name = _simulation(
         fixer,
         integrator_name=integrator_name,
@@ -107,36 +118,111 @@ def run_dynamics(
         timestep_fs=timestep_fs,
         temperature_kelvin=temperature_kelvin,
     )
-    if minimize_iterations:
-        simulation.minimizeEnergy(maxIterations=minimize_iterations)
-    if integrator_name == "langevin":
-        simulation.context.setVelocitiesToTemperature(temperature_kelvin, int(seed))
-    estimate = _estimate_seconds(simulation, steps)
+    if resume_checkpoint is not None:
+        if completed_steps >= steps:
+            raise InvalidInput("The checkpoint is already at the requested step count.")
+        simulation.loadCheckpoint(str(resume_checkpoint))
+        estimate = None
+    else:
+        if minimize_iterations:
+            simulation.minimizeEnergy(maxIterations=minimize_iterations)
+        if integrator_name == "langevin":
+            simulation.context.setVelocitiesToTemperature(temperature_kelvin, int(seed))
+        estimate = _estimate_seconds(simulation, steps)
     start = _positions_angstrom(simulation)
     initial_total = _potential(simulation) + _kinetic(simulation)
     series: list[dict[str, Any]] = []
     stored: list[numpy.ndarray] = []
     stride = max(1, steps // 10)
-    for step in range(1, steps + 1):
+    saved_step = completed_steps
+    positions = start
+    for step in range(completed_steps + 1, steps + 1):
         if cancelled and cancelled():
-            return {"cancelled": True, "frames": series, "runtime_estimate_seconds": estimate}
+            return {
+                "cancelled": True,
+                "frames": series,
+                "runtime_estimate_seconds": estimate,
+                "checkpoint_step": saved_step,
+            }
         simulation.step(1)
+        saved_step = step
+        if checkpoint_path is not None:
+            _write_checkpoint(simulation, checkpoint_path, saved_step, on_checkpoint)
         positions = _positions_angstrom(simulation)
         stored.append(positions)
-        if step == steps or step % stride == 0:
-            series.append(
-                {
-                    "step": step,
-                    "potential_energy_kj_mol": _potential(simulation),
-                    "kinetic_energy_kj_mol": _kinetic(simulation),
-                    "temperature_kelvin": _temperature(simulation),
-                    "rmsd_angstrom": _kabsch_rmsd(start, positions),
-                    "radius_of_gyration_angstrom": radius_of_gyration([tuple(row) for row in positions]),
-                    "pdb": _pdb_text(simulation),
-                }
+        if step == steps or step % stride == 0 or (halt_after is not None and step >= halt_after):
+            series.append(_frame(simulation, step, start, positions))
+        if halt_after is not None and step >= halt_after:
+            return _dynamics_result(
+                simulation,
+                platform_name,
+                seed,
+                integrator_name,
+                timestep_fs,
+                temperature_kelvin,
+                estimate,
+                series,
+                stored,
+                initial_total,
+                saved_step,
+                halted=True,
+                positions=positions,
             )
+    return _dynamics_result(
+        simulation,
+        platform_name,
+        seed,
+        integrator_name,
+        timestep_fs,
+        temperature_kelvin,
+        estimate,
+        series,
+        stored,
+        initial_total,
+        saved_step if checkpoint_path is not None else None,
+        halted=False,
+        positions=positions,
+    )
+
+
+def _write_checkpoint(simulation: Any, path: Path, step: int, on_checkpoint) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    simulation.saveCheckpoint(str(path))
+    if on_checkpoint is not None:
+        on_checkpoint(step)
+
+
+def _frame(simulation: Any, step: int, start: numpy.ndarray, positions: numpy.ndarray) -> dict[str, Any]:
     return {
+        "step": step,
+        "potential_energy_kj_mol": _potential(simulation),
+        "kinetic_energy_kj_mol": _kinetic(simulation),
+        "temperature_kelvin": _temperature(simulation),
+        "rmsd_angstrom": _kabsch_rmsd(start, positions),
+        "radius_of_gyration_angstrom": radius_of_gyration([tuple(row) for row in positions]),
+        "pdb": _pdb_text(simulation),
+    }
+
+
+def _dynamics_result(
+    simulation: Any,
+    platform_name: str,
+    seed: int,
+    integrator_name: str,
+    timestep_fs: float,
+    temperature_kelvin: float,
+    estimate: float | None,
+    series: list[dict[str, Any]],
+    stored: list[numpy.ndarray],
+    initial_total: float,
+    checkpoint_step: int | None,
+    *,
+    halted: bool,
+    positions: numpy.ndarray | None,
+) -> dict[str, Any]:
+    result = {
         "cancelled": False,
+        "halted": halted,
         "label": DYNAMICS_LABEL,
         "platform": platform_name,
         "seed": seed,
@@ -148,7 +234,11 @@ def run_dynamics(
         "rmsf_angstrom": _rmsf(stored),
         "final_total_energy_kj_mol": _potential(simulation) + _kinetic(simulation),
         "initial_total_energy_kj_mol": initial_total,
+        "checkpoint_step": checkpoint_step,
     }
+    if positions is not None:
+        result["final_positions_angstrom"] = positions
+    return result
 
 
 def _simulation(fixer, *, integrator_name: str, seed: int, timestep_fs: float, temperature_kelvin: float = 300.0):

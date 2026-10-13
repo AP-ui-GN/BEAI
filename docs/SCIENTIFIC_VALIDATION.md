@@ -157,6 +157,8 @@ Langevin: 15 steps, 1 fs, seed 7, velocities drawn with that seed, after 15 mini
 
 A short simulation is not evidence of stability, binding, or efficacy.
 
+Checkpoint resume was checked without changing the NVE numbers above. PDBFixer was run once on 1UBQ and that prepared PDB was reloaded for every arm, because a second PDBFixer call does not reproduce coordinates. Langevin, seed 11, 2 minimization iterations, 4 steps of 1 fs. One run stopped after step 2 and wrote an OpenMM checkpoint. A second run loaded that checkpoint and finished the last 2 steps. The maximum absolute coordinate difference versus a continuous 4-step run was 7.993713069254227e-08 Å. The test bound is 1e-5 Å. Command: `.venv/bin/python -m pytest backend/tests/test_simulation.py::test_checkpoint_resume_matches_a_continuous_run`.
+
 ### Generation (session 6E)
 
 BRICS recombination records validity, uniqueness, novelty, diversity, and filter pass rate on each request, with the seed. Those values are calculated from that request. They are not a fixed model-quality benchmark. Every displayed structure is a computational hypothesis: unsynthesized, unvalidated.
