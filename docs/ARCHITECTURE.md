@@ -14,7 +14,9 @@ Direct packages added for this milestone, and the licence metadata their wheels 
 | biotraj | 1.2.2 | LGPL-2.1 | Pulled in by Biotite. Not imported by BEAI directly |
 | httpx | 0.28.1 | BSD-3-Clause | Shared external HTTP client. Already present as a test dependency |
 
-`mkdssp` 4.2.2 is the Ubuntu `dssp` package (installed size about 6.4 MB, BSD-2-Clause, homepage https://github.com/PDB-REDO/dssp). It is not a pip package. The project `.venv` is about 526 MB after Biotite. fpocket is not installed.
+`mkdssp` 4.2.2 is the Ubuntu `dssp` package (installed size about 6.4 MB, BSD-2-Clause, homepage https://github.com/PDB-REDO/dssp). It is not a pip package. The project `.venv` is about 610 MB after RDKit.
+
+RDKit 2025.9.1 (wheel reports BSD-3-Clause) is installed for compound routes. The `rdkit` package directory is about 73 MB. `import rdkit` reports version `2025.09.1`. fpocket is not installed.
 
 ## Milestone 1 as built
 

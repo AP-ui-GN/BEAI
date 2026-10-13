@@ -9,6 +9,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from backend.app.api.errors import register_exception_handlers
 from backend.app.api.routes.analyses import router as analyses_router
+from backend.app.api.routes.compounds import router as compounds_router
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.jobs import router as jobs_router
 from backend.app.api.routes.sequences import router as sequences_router
@@ -108,6 +109,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(analyses_router)
     app.include_router(jobs_router)
     app.include_router(sequences_router)
+    app.include_router(compounds_router)
     return app
 
 

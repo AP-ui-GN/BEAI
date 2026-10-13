@@ -35,7 +35,7 @@ Date: 2026-10-13. Limits after Milestone 2. They are not scientific results.
 ## Environment
 
 - Project packages are installed in `.venv` (about 219 MB), created from `/usr/bin/python3` 3.12.3. They were not installed into system site-packages.
-- Not importable on this machine: RDKit, OpenMM, PyTorch. Biopython 1.88 and Biotite 1.6.0 are installed.
+- Not importable on this machine: OpenMM, PyTorch. Biopython 1.88, Biotite 1.6.0, and RDKit 2025.09.1 are installed.
 - `pytest` and `ruff` are inside `.venv`, not on the default `PATH`. `mkdssp` 4.2.2 is on PATH from the Ubuntu `dssp` package. Still absent from `PATH`: vina, obabel, fpocket.
 - uv and conda are not installed. The planned installer is pip inside `.venv`.
 - No NVIDIA GPU (`nvidia-smi` absent). CUDA-only tools and GPU model loading are unavailable.

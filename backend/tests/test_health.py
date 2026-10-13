@@ -1,5 +1,6 @@
 """Health reports live probes. A missing optional tool is unavailable, not guessed."""
 
+import importlib.util
 import shutil
 from pathlib import Path
 
@@ -18,7 +19,7 @@ def test_health_returns_real_status(client: TestClient) -> None:
     assert body["version"] == "0.1.0"
     assert body["status"] == "ok"
     assert body["database"]["connected"] is True
-    assert body["database"]["revision"] == body["database"]["head"] == "0003_sequences"
+    assert body["database"]["revision"] == body["database"]["head"] == "0004_compounds"
     assert body["database"]["reason"] is None
     assert body["storage"]["writable"] is True
     assert body["storage"]["reason"] is None
@@ -41,8 +42,12 @@ def test_optional_tools_match_this_machine(client: TestClient) -> None:
     assert capabilities["biotite"]["version"]
     assert capabilities["fpocket"]["available"] is False
     assert "not on PATH" in capabilities["fpocket"]["reason"]
-    assert capabilities["rdkit"]["available"] is False
-    assert "not installed" in capabilities["rdkit"]["reason"]
+    rdkit_present = importlib.util.find_spec("rdkit") is not None
+    assert capabilities["rdkit"]["available"] is rdkit_present
+    if rdkit_present:
+        assert capabilities["rdkit"]["version"]
+    else:
+        assert "not installed" in capabilities["rdkit"]["reason"]
     assert capabilities["vina"]["available"] is False
     assert "not on PATH" in capabilities["vina"]["reason"]
     assert capabilities["openmm"]["available"] is False

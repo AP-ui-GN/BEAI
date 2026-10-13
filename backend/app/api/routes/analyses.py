@@ -39,6 +39,7 @@ def _summary(row: Analysis, filename: str | None) -> AnalysisSummary:
         structure_id=row.structure_id,
         structure_filename=filename,
         sequence_id=row.sequence_id,
+        compound_id=row.compound_id,
         error=error,
     )
 

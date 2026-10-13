@@ -132,6 +132,7 @@ class AnalysisSummary(BaseModel):
     structure_id: str | None
     structure_filename: str | None
     sequence_id: str | None = None
+    compound_id: str | None = None
     error: AnalysisErrorBody | None
 
 

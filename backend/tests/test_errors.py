@@ -31,4 +31,10 @@ def test_capability_unavailable_returns_503_without_traceback() -> None:
 def test_health_still_works_when_optional_tools_are_absent(client: TestClient) -> None:
     response = client.get("/api/health")
     assert response.status_code == 200
-    assert response.json()["capabilities"]["rdkit"]["available"] is False
+    rdkit = response.json()["capabilities"]["rdkit"]
+    assert isinstance(rdkit["available"], bool)
+    if rdkit["available"]:
+        assert rdkit["version"]
+        assert rdkit["reason"] is None
+    else:
+        assert rdkit["reason"]

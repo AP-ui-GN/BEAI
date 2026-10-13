@@ -67,9 +67,9 @@ Reference values from the milestone contract. They are checks for a future RDKit
 
 | Input | Formula | Molecular weight | Result |
 | --- | --- | --- | --- |
-| Aspirin `CC(=O)Oc1ccccc1C(=O)O` | C9H8O4 | 180.16 | not run |
-| Caffeine `CN1C=NC2=C1C(=O)N(C(=O)N2C)C` | C8H10N4O2 | 194.19 | not run |
-| Ethanol `CCO` | C2H6O | 46.07 | not run |
+| Aspirin `CC(=O)Oc1ccccc1C(=O)O` | C9H8O4 | 180.16 | passed 2026-10-13. RDKit 2025.09.1 `Descriptors.MolWt` rounded to 2 decimals |
+| Caffeine `CN1C=NC2=C1C(=O)N(C(=O)N2C)C` | C8H10N4O2 | 194.19 | passed in the same run |
+| Ethanol `CCO` | C2H6O | 46.07 | passed in the same run |
 
 When the tests are written, confirm each value with RDKit and a second source named in the test comment. Also require: self-Tanimoto 1.0, a symmetric matrix, aspirin closer to salicylic acid than to caffeine, salts left as multi-fragment unless the caller asks, and a mocked network failure that stores nothing.
 

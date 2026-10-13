@@ -128,3 +128,12 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - 1UBQ DSSP, SASA, mass, and the pocket benchmark numbers are in `docs/SCIENTIFIC_VALIDATION.md`. They were copied from the commands in this entry's tests, not typed from memory.
 - Pocket parameters were changed once using only the tuning set, after protein radius 1.7 Å left the core unfilled. Held-out success was 3/5, including the failures.
 - The protein UI polls `GET /api/jobs/{id}` on a timer while a real job is running. The timer is not a progress value. Progress shown in the UI is the number the job row returns, or blank when that number is null.
+
+## 2026-10-13 — Milestone 3, compound intelligence
+
+- Installed `rdkit==2025.9.1` (BSD-3-Clause, about 73 MB). `rdkit.__version__` is `2025.09.1`. The `.venv` is about 610 MB.
+- PubChem name lookup for aspirin on 2026-10-13 returned ConnectivitySMILES and a null CanonicalSMILES. The importer stores that null instead of copying the connectivity string into the canonical field.
+- ChEMBL molecule JSON for CHEMBL25 did not include a licence field. The stored record says so.
+- `.venv/bin/python -m pytest` — **66 passed, 1 deselected, 0 failed**.
+- `npm --prefix frontend test` — **7 passed, 0 failed**. `npm --prefix frontend run build` completed.
+- Aspirin, caffeine, and ethanol matched C9H8O4 / 180.16, C8H10N4O2 / 194.19, and C2H6O / 46.07 after rounding MolWt to 2 decimals.

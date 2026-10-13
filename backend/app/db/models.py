@@ -26,6 +26,20 @@ class Structure(Base):
     metadata_json: Mapped[dict] = mapped_column(JSON, nullable=False)
 
 
+class CompoundRecord(Base):
+    """A sanitized molecule. Canonical SMILES are RDKit's, with the RDKit version in the analysis."""
+
+    __tablename__ = "compounds"
+    __table_args__ = (Index("ix_compounds_inchikey", "inchikey", unique=True),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    input_smiles: Mapped[str] = mapped_column(String, nullable=False)
+    canonical_smiles: Mapped[str] = mapped_column(String, nullable=False)
+    inchikey: Mapped[str] = mapped_column(String(27), nullable=False)
+    source_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class SequenceRecord(Base):
     """A validated protein sequence. Gaps are removed before storage."""
 
@@ -82,6 +96,10 @@ class Analysis(Base):
     )
     sequence_id: Mapped[str | None] = mapped_column(
         ForeignKey("sequences.id"),
+        nullable=True,
+    )
+    compound_id: Mapped[str | None] = mapped_column(
+        ForeignKey("compounds.id"),
         nullable=True,
     )
     result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)

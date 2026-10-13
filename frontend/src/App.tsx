@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Layout } from "@/components/Layout"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Dashboard } from "@/pages/Dashboard"
+import { CompoundExplorer } from "@/pages/CompoundExplorer"
 import { PlannedRoute } from "@/pages/Planned"
 import { ProteinExplorer } from "@/pages/ProteinExplorer"
 import { ResearchLibrary } from "@/pages/ResearchLibrary"
@@ -16,17 +17,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="proteins" element={<ProteinExplorer />} />
             <Route path="proteins/:structureId" element={<ProteinExplorer />} />
-            <Route
-              path="compounds"
-              element={
-                <PlannedRoute
-                  title="Compound Explorer"
-                  summary="Compound sanitization, descriptors, and depiction are planned for a later milestone. Nothing here submits a structure or a SMILES string."
-                  capabilityKey="rdkit"
-                  toolName="RDKit"
-                />
-              }
-            />
+            <Route path="compounds" element={<CompoundExplorer />} />
             <Route
               path="discovery"
               element={
