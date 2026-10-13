@@ -49,7 +49,7 @@ Run from the repository root. On this machine, put Node v22.23.3 ahead of `PATH`
 - Run backend: `.venv/bin/uvicorn backend.app.main:app --host 127.0.0.1 --port 8731`
 - Install frontend: `npm --prefix frontend install`
 - Run frontend: `npm --prefix frontend run dev` (serves `http://127.0.0.1:8732` and proxies `/api`)
-- Backend tests: `.venv/bin/python -m pytest` — 103 passed, 3 deselected (`network` and `model`), 0 failed (2026-10-13, session 6D)
+- Backend tests: `.venv/bin/python -m pytest` — 105 passed, 3 deselected (`network` and `model`), 0 failed (2026-10-13, session 6E)
 - Live import: `.venv/bin/python -m pytest --override-ini addopts= -m network backend/tests/test_retrieval.py` — 1 passed, 0 failed
 - Frontend unit tests: `npm --prefix frontend test` — 7 passed, 0 failed
 - Browser smoke test: `npm --prefix frontend run e2e` with both servers already running — 1 passed, 0 failed on Milestone 1. Not re-run after Milestone 2 panels.

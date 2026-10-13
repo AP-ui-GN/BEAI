@@ -2,6 +2,13 @@
 
 Date: 2026-10-13. Limits after session 6A. They are not scientific results.
 
+## Session 6E
+
+- Generation is BRICS recombination of molecules the caller supplies. It is not a trained generative model.
+- PAINS, Brenk, and NIH cannot be disabled. Requests that mention toxicity or hazard are rejected.
+- Outputs are computational hypotheses. They are not synthesized and not validated.
+- Playwright was not re-run.
+
 ## Session 6D
 
 - OpenMM platforms on this machine are Reference and CPU. There is no CUDA, OpenCL, or Metal platform.

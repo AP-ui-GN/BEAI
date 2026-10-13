@@ -144,6 +144,13 @@ Baseline before edits: `m1-foundation` at `57e3a59`, `.venv/bin/python -m pytest
 - A real Vina run on 3PTB / benzamidine wrote `backend/tests/fixtures/vina/3ptb_ben_seed1.pdbqt`. Parser scores match those REMARK lines. Two seed-1 runs differed by 0.006 kcal/mol. The test window is 0.05 kcal/mol.
 - `.venv/bin/python -m pytest` — **71 passed, 1 deselected, 0 failed**. Docking tests included a real Vina run.
 
+## 2026-10-13 — Milestone 6 session 6E, molecular generation
+
+- BRICS recombination of reference molecules. PAINS, Brenk, and NIH stay on. A request that sets filters off, or that mentions toxicity, returns HTTP 422 and stores nothing.
+- Displayed SMILES are RDKit-sanitized. Each carries the label "computational hypothesis: unsynthesized, unvalidated".
+- Metrics recorded on the result: validity, uniqueness, novelty, diversity, and filter pass rate, with the seed.
+- `npm --prefix frontend run build` completed after the generation form was added.
+
 ## 2026-10-13 — Milestone 6 session 6D, OpenMM
 
 - Installed openmm 8.6.1 (wheel metadata: Python Software Foundation License (BSD-like); wheel about 14.4 MB; package directory about 70 MB) and pdbfixer 1.12.0 (MIT). Platforms: Reference and CPU.

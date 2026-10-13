@@ -24,6 +24,9 @@ export function DrugDiscovery() {
     return () => controller.abort()
   }, [])
 
+  const HYPOTHESIS = "computational hypothesis: unsynthesized, unvalidated"
+  const [references, setReferences] = useState("CC(=O)Oc1ccccc1C(=O)O\nCCOC(=O)c1ccc(N)cc1")
+  const [generated, setGenerated] = useState<AnalysisDetail | null>(null)
   const vina = health?.capabilities.vina
   const meeko = health?.capabilities.meeko
   const ready = Boolean(vina?.available && meeko?.available)
@@ -93,6 +96,56 @@ export function DrugDiscovery() {
         </p>
       ) : null}
       {error ? <p role="alert">{error}</p> : null}
+      <section className="max-w-xl space-y-2">
+        <h2 className="text-xl">Hypothesis generation</h2>
+        <p className="text-sm">{HYPOTHESIS}</p>
+        <fieldset className="space-y-1 text-sm">
+          <legend>Liability filters</legend>
+          <label className="block">
+            <input type="checkbox" checked disabled /> PAINS
+          </label>
+          <label className="block">
+            <input type="checkbox" checked disabled /> Brenk
+          </label>
+          <label className="block">
+            <input type="checkbox" checked disabled /> NIH
+          </label>
+        </fieldset>
+        <label className="block text-sm" htmlFor="gen-references">
+          Reference SMILES, one per line
+        </label>
+        <textarea
+          id="gen-references"
+          className="min-h-20 w-full rounded border px-2 py-1 text-sm"
+          value={references}
+          onChange={(event) => setReferences(event.target.value)}
+        />
+        <Button
+          type="button"
+          onClick={() => {
+            setError(null)
+            void apiPost<AnalysisDetail>("/api/generation", {
+              references: references.split("\n").map((line) => line.trim()).filter(Boolean),
+              objectives: [{ kind: "property_range", property: "MolWt", minimum: 50, maximum: 800 }],
+              seed: 1,
+              count: 5,
+            })
+              .then(setGenerated)
+              .catch((caught: unknown) => setError(caught instanceof Error ? caught.message : "Generation failed."))
+          }}
+        >
+          Recombine fragments
+        </Button>
+        {generated?.result?.details?.outputs ? (
+          <ul className="space-y-1 text-sm">
+            {(generated.result.details.outputs as Array<{ smiles: string; label: string }>).map((item) => (
+              <li key={item.smiles}>
+                {item.smiles} — {item.label}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
     </div>
   )
 }

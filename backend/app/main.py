@@ -11,6 +11,7 @@ from backend.app.api.errors import register_exception_handlers
 from backend.app.api.routes.analyses import router as analyses_router
 from backend.app.api.routes.compounds import router as compounds_router
 from backend.app.api.routes.docking import router as docking_router
+from backend.app.api.routes.generation import router as generation_router
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.jobs import router as jobs_router
 from backend.app.api.routes.models import router as models_router
@@ -139,6 +140,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(safety_router)
     app.include_router(models_router)
     app.include_router(simulation_router)
+    app.include_router(generation_router)
     return app
 
 

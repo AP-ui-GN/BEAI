@@ -135,7 +135,11 @@ NVE: 20 steps, 1 fs, Verlet, zero initial velocities, after 20 minimization iter
 
 Langevin: 15 steps, 1 fs, seed 7, velocities drawn with that seed, after 15 minimization iterations. Mean kinetic temperature 260.1331467073965 K, inside the pre-registered window 150 K to 450 K. Two runs on the same prepared system differed by 1.6878309150943096 kJ/mol in final total energy. The pre-registered 1.0 kJ/mol reproduction bound was missed. Unseeded runs earlier were hundreds to thousands of kJ/mol apart.
 
-A short simulation is not evidence of stability, binding, or efficacy. Generation has no results yet.
+A short simulation is not evidence of stability, binding, or efficacy.
+
+### Generation (session 6E)
+
+BRICS recombination records validity, uniqueness, novelty, diversity, and filter pass rate on each request, with the seed. Those values are calculated from that request. They are not a fixed model-quality benchmark. Every displayed structure is a computational hypothesis: unsynthesized, unvalidated.
 
 - Embeddings: on a small curated pair set, rank correlation between embedding cosine similarity and pairwise alignment identity, with a bootstrap interval. No functional or structural claim.
 - Solubility: public set such as ESOL, checksum and licence recorded, scaffold split saved with its seed, baseline beside any neural model, RMSE, MAE, and R-squared with bootstrap intervals.
