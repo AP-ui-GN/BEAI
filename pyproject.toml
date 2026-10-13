@@ -37,7 +37,8 @@ include = ["backend*"]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
-addopts = "-q"
+addopts = "-q -m 'not network'"
+markers = ["network: live calls to public scientific APIs"]
 
 [tool.ruff]
 line-length = 120

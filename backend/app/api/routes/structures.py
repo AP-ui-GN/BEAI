@@ -8,6 +8,8 @@ from backend.app.api.routes.jobs import get_runner, to_job_response
 from backend.app.core.config import Settings
 from backend.app.core.errors import InvalidInput
 from backend.app.core.timeutil import utc_iso
+from backend.app.data_access.http import ExternalHttp
+from backend.app.data_access.rcsb import fetch_entry
 from backend.app.db.models import Structure
 from backend.app.db.session import get_session
 from backend.app.schemas.job import JobResponse
@@ -15,6 +17,7 @@ from backend.app.schemas.structure import (
     ResidueListResponse,
     ResidueRow,
     StructureCompareRequest,
+    StructureImportRequest,
     StructureListResponse,
     StructureResponse,
 )
@@ -23,6 +26,7 @@ from backend.app.services.structure.ingest import (
     get_structure,
     ingest_structure,
     list_structures,
+    store_structure_bytes,
     structure_file,
 )
 
@@ -55,6 +59,25 @@ async def create_structure(
 @router.get("", response_model=StructureListResponse)
 def get_structures(session: Session = Depends(get_session)) -> StructureListResponse:
     return StructureListResponse(structures=[_to_response(row) for row in list_structures(session)])
+
+
+@router.post("/import", status_code=201, response_model=StructureResponse)
+def import_structure(
+    body: StructureImportRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+) -> StructureResponse:
+    settings: Settings = request.app.state.settings
+    http: ExternalHttp = request.app.state.http
+    payload, provenance = fetch_entry(http, body.pdb_id)
+    row = store_structure_bytes(
+        payload,
+        f"{provenance['identifier']}.pdb",
+        settings,
+        session,
+        provenance=provenance,
+    )
+    return _to_response(row)
 
 
 @router.post("/compare", status_code=202, response_model=JobResponse)

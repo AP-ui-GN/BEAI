@@ -11,6 +11,12 @@ class SequenceCreate(BaseModel):
     text: str = Field(min_length=1)
 
 
+class SequenceImportRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    accession: str
+
+
 class SequenceAlignRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

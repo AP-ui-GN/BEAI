@@ -10,12 +10,15 @@ from backend.app.api.routes.analyses import _detail
 from backend.app.core.config import Settings
 from backend.app.core.errors import InvalidInput
 from backend.app.core.timeutil import utc_iso
+from backend.app.data_access.http import ExternalHttp
+from backend.app.data_access.uniprot import fetch_sequence
 from backend.app.db.models import Analysis, SequenceRecord
 from backend.app.db.session import get_session
 from backend.app.schemas.analysis import AnalysisDetail, AnalysisResult
 from backend.app.schemas.sequence import (
     SequenceAlignRequest,
     SequenceCreate,
+    SequenceImportRequest,
     SequenceListResponse,
     SequenceResponse,
 )
@@ -93,6 +96,23 @@ def get_sequences(session: Session = Depends(get_session)) -> SequenceListRespon
 def get_sequence_by_id(sequence_id: str, session: Session = Depends(get_session)) -> SequenceResponse:
     row = get_sequence(session, sequence_id)
     return _sequence_response(row, _latest_analysis(session, row.id))
+
+
+@router.post("/import", status_code=201, response_model=SequenceResponse)
+def import_sequence(
+    body: SequenceImportRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+) -> SequenceResponse:
+    settings: Settings = request.app.state.settings
+    http: ExternalHttp = request.app.state.http
+    fetched = fetch_sequence(http, body.accession)
+    text = f">{fetched['header']}\n{fetched['sequence']}\n"
+    stored = ingest_sequence_text(text, session, settings, source=fetched["source"])
+    if len(stored) != 1:
+        raise InvalidInput("UniProt import expected one sequence.")
+    row, analysis = stored[0]
+    return _sequence_response(row, analysis)
 
 
 @router.post("/align", status_code=201, response_model=AnalysisDetail)

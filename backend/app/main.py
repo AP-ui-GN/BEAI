@@ -72,6 +72,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             yield
         finally:
             runner.shutdown()
+            http = getattr(app.state, "http", None)
+            if http is not None:
+                http.close()
     storage = active.resolved_storage_dir()
     storage.mkdir(parents=True, exist_ok=True)
     database_url = active.resolved_database_url()
@@ -86,6 +89,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = active
     app.state.engine = make_engine(database_url)
     app.state.session_factory = session_factory(app.state.engine)
+    from backend.app.data_access.http import ExternalHttp
+
+    cache_dir = active.resolved_cache_dir()
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    app.state.http = ExternalHttp(cache_dir)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=active.cors_origin_list(),

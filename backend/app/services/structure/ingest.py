@@ -76,6 +76,59 @@ async def ingest_structure(upload: UploadFile, settings: Settings, session: Sess
     return row
 
 
+def store_structure_bytes(
+    payload: bytes,
+    display_filename: str,
+    settings: Settings,
+    session: Session,
+    provenance: dict | None = None,
+) -> Structure:
+    """Store bytes that were already fetched. The caller must not pass a client filename as a path."""
+
+    display = sanitize_display_filename(display_filename)
+    structure_format = format_for_filename(display)
+    if len(payload) > settings.max_upload_bytes:
+        raise InvalidInput("The structure exceeds the upload limit.")
+    assert_text_structure(payload, structure_format)
+    records = coordinate_record_count(payload)
+    if records > settings.max_atom_count:
+        raise InvalidInput(
+            f"The structure has {records} coordinate records, above the limit of {settings.max_atom_count}."
+        )
+    structure_id = str(uuid.uuid4())
+    suffix = "pdb" if structure_format == "pdb" else "cif"
+    stored_name = f"{structure_id}.{suffix}"
+    destination = safe_stored_file(settings.resolved_storage_dir(), stored_name)
+    destination.write_bytes(payload)
+    try:
+        summary = parse_structure_file(destination, structure_format, records)
+        metadata = {
+            "title": summary.title,
+            "model_count": summary.model_count,
+            "chain_ids": summary.chain_ids,
+            "coordinate_record_count": summary.coordinate_record_count,
+        }
+        if provenance is not None:
+            metadata["provenance"] = provenance
+        row = Structure(
+            id=structure_id,
+            display_filename=display,
+            stored_path=stored_name,
+            sha256=sha256_hex(payload),
+            format=structure_format,
+            size_bytes=len(payload),
+            created_at=datetime.now(UTC),
+            metadata_json=metadata,
+        )
+        session.add(row)
+        session.commit()
+        session.refresh(row)
+    except Exception:
+        destination.unlink(missing_ok=True)
+        raise
+    return row
+
+
 def list_structures(session: Session) -> list[Structure]:
     statement = select(Structure).order_by(Structure.created_at.desc(), Structure.id.desc())
     return list(session.scalars(statement))

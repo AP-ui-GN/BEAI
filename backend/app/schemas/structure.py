@@ -19,6 +19,12 @@ class StructureListResponse(BaseModel):
     structures: list[StructureResponse]
 
 
+class StructureImportRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    pdb_id: str
+
+
 class StructureCompareRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

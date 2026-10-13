@@ -26,6 +26,7 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///data/beai.sqlite"
     storage_dir: Path = Path("data/structures")
+    cache_dir: Path = Path("data/cache")
     max_upload_bytes: int = 50 * 1024 * 1024
     max_atom_count: int = 200_000
     max_sequence_length: int = 50_000
@@ -55,6 +56,12 @@ class Settings(BaseSettings):
         if not origins:
             raise ValueError("BEAI_CORS_ORIGINS must list at least one origin")
         return origins
+
+    def resolved_cache_dir(self) -> Path:
+        path = self.cache_dir
+        if not path.is_absolute():
+            path = repo_root() / path
+        return path.resolve()
 
     def resolved_storage_dir(self) -> Path:
         path = self.storage_dir
